@@ -22,16 +22,16 @@ function HoverFooter() {
         links: [
           { label: "Home", href: "/" },
           { label: "Mods", href: "/mods" },
-          { label: "About", href: "/projects" },
+          { label: "About", href: "/about" },
           { label: "Contact", href: "/contact" },],
     },
     {
       title: "Resources",
       links: [
-        { label: "Privacy Policy", href: "#" },
-        { label: "Terms of Service", href: "#" },
-        { label: "Safety Guidelines", href: "#" },
-        { label: "DMCA Compliance", href: "#" },
+        { label: "Privacy Policy", href: "/resources/privacy" },
+        { label: "Terms of Service", href: "/resources/terms" },
+        { label: "Safety Guidelines", href: "/resources/safety" },
+        { label: "DMCA Compliance", href: "/resources/dmca" },
         { label: "", href: "#" },
       ],
     },
@@ -50,8 +50,8 @@ function HoverFooter() {
   // Social media icons
  
   return (
-    <footer className="bg-[#0F0F11]/10 relative h-fit rounded-3xl overflow-hidden m-8">
-      <div className="max-w-7xl mx-auto p-14 z-40 relative">
+    <footer className="bg-[#0F0F11]/10 relative h-fit rounded-[1rem] overflow-hidden backdrop-blur-sm m-8">
+      <div className="max-w-7xl mx-auto p-8 z-40 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 lg:gap-10 pb-12">
           {/* Brand section */}
           <div className="flex flex-col space-y-4">
@@ -100,7 +100,7 @@ function HoverFooter() {
             © {new Date().getFullYear()} modshaven. All rights reserved.
           </p>
         </div>
-        <hr className="border-t border-[#ff6600] my-15" />
+        <hr className="border-t border-[#ff6600] my-15 p-8" />
 
         
       </div>

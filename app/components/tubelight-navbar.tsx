@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home,   LayoutGrid,SendHorizontal,Info,FolderGit, LucideIcon } from "lucide-react"
+import { Home,   LayoutGrid,SendHorizontal,Info,FolderGit,Send,Mail, LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 
@@ -13,6 +13,8 @@ const iconMap: Record<string, LucideIcon> = {
   LayoutGrid,
   SendHorizontal,
   Info,
+  Send,
+   Mail,
   FolderGit
 }
 
@@ -47,7 +49,7 @@ export function NavBar({ items, className }: NavBarProps) {
   return (
     <div
       className={cn(
-        "fixed  sm:top-1 left-1/2 -translate-x-1/2 z-50",
+        "fixed top-1 left-1/2 -translate-x-1/2 z-50",
         className,
       )}
     >

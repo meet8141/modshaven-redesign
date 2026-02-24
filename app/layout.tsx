@@ -8,9 +8,10 @@ import { NavBar } from "./components/tubelight-navbar"
  const navItems = [
     { name: 'Home', url: '/', icon: 'Home' },
         { name: 'Mods', url: '/mods', icon: 'FolderGit' },
+            { name: 'Send', url: '/send', icon: 'Send' },
     { name: 'About', url: '/about', icon: 'Info' },
 
-    { name: 'Contact', url: '/contact', icon: 'SendHorizontal' }
+    { name: 'Contact', url: '/contact', icon: 'Mail' }
   ];
 const geistSans = Geist({
   variable: "--font-geist-sans",

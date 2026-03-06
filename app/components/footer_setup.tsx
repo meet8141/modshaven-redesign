@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import {FooterBackgroundGradient} from "./footer";
 import { TextHoverEffect } from "./footer";
-import { link } from "fs";
+import Link from "next/link";
 
 function HoverFooter() {
   // Footer link data
@@ -38,7 +38,7 @@ function HoverFooter() {
     {
       title: "Connect",
       links: [
-        { label: "Contact Us", href: "#" },
+        { label: "Contact Us", href: "/contact" },
        
      
       ],
@@ -75,12 +75,12 @@ function HoverFooter() {
               <ul className="space-y-3 text-[#a7a8b5] font-[700]">
                 {section.links.map((link) => (
                   <li key={link.label} className="relative">
-                    <a
+                    <Link
                       href={link.href}
                       className="hover:text-[#ff6600] transition-colors"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                 
                   </li>
                 ))}

@@ -4,7 +4,7 @@
 import Image from "next/image";
 import SplitText from "./components/SplitText";
 import DecryptedText from './components/DecryptedText';
-import Grainient from './components/Grainient';
+
 import { FolderSearch, Download, Gamepad } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -64,7 +64,7 @@ export default function Home() {
       `}</style>
           </button>
           <button
-            className="mt-10 px-4 py-2 bg-transparent border-2 border-[#ff6600] text-[#fff] font-bold rounded-[0.75rem] hover:bg-[#ff660010] hover:text-[#ff6600] transition-colors duration-300"
+            className="mt-10 px-4 py-2 bg-transparent backdrop-blur-lg  border-2 border-[#ff6600] text-[#fff] font-bold rounded-[0.75rem] hover:bg-[#ff660010] hover:text-[#ff6600] transition-colors duration-300"
             onClick={() => router.push('/resources/about')}
           >
             About

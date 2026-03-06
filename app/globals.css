@@ -49,6 +49,27 @@
 }
 @import "tailwindcss";
 
+/* ── Themed scrollbar for dropdowns ── */
+.scrollbar-themed {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 102, 0, 0.35) transparent;
+}
+.scrollbar-themed::-webkit-scrollbar {
+  width: 11px; /* 3px thumb + 8px right margin */
+}
+.scrollbar-themed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-themed::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 102, 0, 0.35);
+  border-radius: 999px;
+  border-right: 8px solid transparent;
+  background-clip: padding-box;
+}
+.scrollbar-themed::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 102, 0, 0.65);
+}
+
 
 
 :root {

@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} antialiased`}
+        className={`${inter.variable} antialiased bg-black`}
       >
         <NavBar items={navItems} />
   <div style={{ width: '100%', height: '100%', position: 'fixed', top: 0, left: 0, zIndex: 0 }}>
@@ -73,7 +73,7 @@ export default function RootLayout({
 
 
        
-        <div className="relative" style={{ zIndex: 1 }}>
+        <div className="relative " style={{ zIndex: 1 }}>
           {children}
         </div>
         <HoverFooter />

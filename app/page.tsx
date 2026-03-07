@@ -114,7 +114,7 @@ export default function Home() {
               <span className="flex gap-4"><span className="flex"><span className=" fixed text-green-400 animate-ping scale-125">● </span><span className=" fixed text-green-400 scale-125">● </span></span> 2,460 online</span>
               <span> ● 22,156 members</span>
             </div>
-            <button className="mt-6 px-6 py-3 bg-blue-600 rounded-[0.75rem] font-semibold hover:bg-[#5865f2] transition">
+            <button className="mt-6 px-6 py-3 bg-[#5865f2] rounded-[0.75rem] font-semibold hover:bg-[#4752c4] transition">
               JOIN DISCORD
             </button>
           </div>

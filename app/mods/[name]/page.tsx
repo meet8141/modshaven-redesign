@@ -4,8 +4,9 @@ import DecryptedText from '@/app/components/DecryptedText';
 import ImageGallery from '@/app/components/ImageGallery';
 
 import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive,Copyright,Download,BadgeCheck } from 'lucide-react';
-import { div } from "motion/react-client";
 import type { Metadata } from "next";
+
+export const dynamic = 'force-dynamic';
 import { getModByName, getRandomMods } from '@/lib/DB';
 import RecommendedSlider from '@/app/components/RecommendedSlider';
 import ShinyText from '@/app/components/ShinyText';

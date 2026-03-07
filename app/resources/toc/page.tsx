@@ -7,7 +7,7 @@ import DecryptedText from '@/app/components/DecryptedText';
 
 
 
-export default function Home() {
+export default function toc() {
   return (
     <>
  

@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     const onlineCount = guildData.approximate_presence_count || 0;
     return NextResponse.json({ memberCount, onlineCount });
   } catch (error) {
-    return NextResponse.json({ memberCount: 0, onlineCount: 0, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ memberCount: 0, onlineCount: 0, error: message }, { status: 500 });
   }
 }

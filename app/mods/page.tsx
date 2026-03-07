@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive, ArrowLeft, ArrowRight } from 'lucide-react';
+import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive, ArrowLeft, ArrowRight,SearchX } from 'lucide-react';
 import Link from "next/link";
 import { getModsPaginated } from '@/lib/DB';
 import ShinyText from '../components/ShinyText';
@@ -16,10 +16,23 @@ export const metadata: Metadata = {
 };
 
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
-  const { page: pageParam } = await searchParams;
+export default async function Home({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; type?: string; brand?: string; game?: string; sort?: string }> }) {
+  const { page: pageParam, search, type, brand, game, sort } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam || '1', 10) || 1);
-  const { mods, totalPages } = await getModsPaginated(currentPage, 12);
+
+  const filters = { search, type, brand, game, sort };
+  const { mods, totalPages } = await getModsPaginated(currentPage, 12, filters);
+
+  // Helper: build a URL for pagination that preserves active filters
+  const pageUrl = (p: number) => {
+    const params: Record<string, string> = { page: String(p) };
+    if (search) params.search = search;
+    if (type  && type  !== 'all') params.type  = type;
+    if (brand && brand !== 'all') params.brand = brand;
+    if (game  && game  !== 'all') params.game  = game;
+    if (sort  && sort  !== 'latest') params.sort = sort;
+    return `/mods?${new URLSearchParams(params).toString()}`;
+  };
 
   return (
     <>
@@ -30,13 +43,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
         <main className="w-full">
 
        
-          <div className="mb-6 mt-4">
+          <div className="mb-6 mt-5 ">
             <ShinyText
               text="Browse Mods"
               speed={4}
               delay={0}
               color="#ffffff"
-              shineColor="#969696"
+              shineColor="#fff"
               spread={40}
               direction="right"
               yoyo={false}
@@ -50,6 +63,21 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
           <SearchFilterBar />
 
           {/* ── Mod grid ── */}
+          {mods.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 w-full max-w-4xl max-h-4xl mx-auto gap-4 text-center bg-black/30 backdrop-blur-lg rounded-[1rem]">
+              <div className="text-6xl"><SearchX className="text-[#ff6600] w-40 h-40" /></div>
+              <h2 className="text-2xl font-[800] text-white">No mods found</h2>
+              <p className="text-[#a5a6b4] font-[600] max-w-sm">
+                Nothing matched your filters. Try a different search term or clear some filters to see more mods.
+              </p>
+              <Link
+                href="/mods"
+                className="mt-2 px-5 py-2 rounded-[0.75rem] border-2 border-[#ff6600] text-[#ff6600] font-[700] hover:bg-[#ff6600] hover:text-white transition-all"
+              >
+                Clear filters
+              </Link>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {mods.map((mod: any) => (
               <div
@@ -61,15 +89,15 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
                 </div>
                 <div className="flex flex-col gap-1 px-2">
                   <h2 className="text-[1.3rem] font-[900]">
-                    <ShinyText text={mod.name} speed={4} className="text-[1.3rem] font-[900]" />
+                    <ShinyText text={mod.name} shineColor='#fff' color='#fff' speed={4} className="text-[1.3rem] font-[900]" />
                   </h2>
                   <p className="text-[0.9rem] text-white font-[700]">By {mod.author}</p>
                 </div>
                 <div className="flex gap-2 px-2">
-                  <p className="text-[13px] text-[#a5a6b4] font-[900] flex gap-1">
+                  <p className="text-[13px] text-[#a5a6b4] font-[900] flex items-center gap-1">
                     <FolderArchive className="w-4 h-4 text-white" />{mod.downloads_size}
                   </p>
-                  <p className="text-[13px] text-[#a5a6b4] font-[900] flex gap-1">
+                  <p className="text-[13px] text-[#a5a6b4] font-[900] flex items-center gap-1">
                     <CalendarFold className="w-4 h-4 text-white" />
                     {mod.date_added ? mod.date_added.split('T')[0] : ''}
                   </p>
@@ -113,6 +141,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
               </div>
             ))}
           </div>
+          )}
 
           {/* ── Pagination ── */}
           {totalPages > 1 && (() => {
@@ -144,7 +173,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
               <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 mt-12 px-2">
                 {/* Prev */}
                 {currentPage > 1 ? (
-                  <Link href={`/mods?page=${currentPage - 1}`} className={inactiveBtn}>
+                  <Link href={pageUrl(currentPage - 1)} className={inactiveBtn}>
                     <ArrowLeft className="w-4 h-4" />
                   </Link>
                 ) : (
@@ -158,7 +187,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
                   ) : (
                     <Link
                       key={p}
-                      href={`/mods?page=${p}`}
+                      href={pageUrl(p as number)}
                       className={p === currentPage ? activeBtn : inactiveBtn}
                     >
                       {p}
@@ -168,7 +197,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
 
                 {/* Next */}
                 {currentPage < totalPages ? (
-                  <Link href={`/mods?page=${currentPage + 1}`} className={inactiveBtn}>
+                  <Link href={pageUrl(currentPage + 1)} className={inactiveBtn}>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 ) : (

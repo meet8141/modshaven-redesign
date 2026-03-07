@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
+
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Shuffle, ArrowUpRight, CarFront, Map, Truck } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Shuffle, ArrowUpRight, CarFront, Map, Truck } from 'lucide-react';
 import ShinyText from '@/app/components/ShinyText';
 import BrandIcon from '@/app/components/BrandIcon';
+
+// Swiper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Mousewheel, FreeMode } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+import 'swiper/css';
 
 type Mod = {
   _id: string;
@@ -32,41 +39,43 @@ const typeIcon = (mod_type?: string) => {
 
 export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] }) {
   const [mods, setMods] = useState<Mod[]>(initialMods);
-  const [start, setStart] = useState(0);
+  const swiperRef = useRef<SwiperType | null>(null);
 
-  // Visible count: 4 on lg, 2 on sm, 1 on xs — handled via CSS grid, start just shifts index
-  const visibleCount = 4;
-  const maxStart = Math.max(0, mods.length - visibleCount);
+  const prev = () => swiperRef.current?.slidePrev();
+  const next = () => swiperRef.current?.slideNext();
 
-  const prev = () => setStart((s) => Math.max(0, s - 1));
-  const next = () => setStart((s) => Math.min(maxStart, s + 1));
   const doShuffle = useCallback(() => {
     setMods((m) => shuffle(m));
-    setStart(0);
+    setTimeout(() => swiperRef.current?.slideTo(0), 0);
   }, []);
-
-  const visible = mods.slice(start, start + visibleCount);
-  // Pad to always fill 4 slots so layout doesn't jump
-  const padded = [...visible, ...Array(Math.max(0, visibleCount - visible.length)).fill(null)];
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 mt-10 sm:mt-16">
       {/* Heading */}
       <div className="flex flex-col items-center mb-8">
-        <ShinyText text="Recommended Mods" speed={4} className="text-2xl sm:text-3xl font-[800]" />
-        
+        <ShinyText text="Recommended Mods" speed={4} shineColor='#fff' color='#fff' className="text-2xl sm:text-3xl font-[800]" />
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {padded.map((mod, i) =>
-          mod ? (
-            <div
-              key={mod._id}
-              className="bg-black/30 backdrop-blur-lg   border-2 border-transparent hover:border-[#ff6600] rounded-[1rem] p-3 flex flex-col gap-3 transition-all duration-300 hover:scale-[1.02]"
-            >
+      {/* Swiper slider */}
+      <Swiper
+        modules={[Navigation, Mousewheel, FreeMode]}
+        spaceBetween={20}
+        slidesPerView={1}
+        loop={true}
+        grabCursor={true}
+        freeMode={{ enabled: true, sticky: false }}
+        mousewheel={{ forceToAxis: true }}
+        onSwiper={(swiper) => { swiperRef.current = swiper; }}
+        breakpoints={{
+          640:  { slidesPerView: 2, spaceBetween: 20 },
+          1024: { slidesPerView: 4, spaceBetween: 24 },
+        }}
+      >
+        {mods.map((mod) => (
+          <SwiperSlide key={mod._id}>
+            <div className="bg-black/30 backdrop-blur-lg  border-2 border-transparent hover:border-[#ff6600] rounded-[1rem] p-3 flex flex-col gap-3 transition-all duration-300  h-full">
               {/* Image */}
-              <div className="w-full h-44 rounded-[0.75rem] overflow-hidden bg-black/40">
+              <div className="w-full h-34 rounded-[0.75rem] overflow-hidden bg-black/40">
                 <img
                   src={mod.mod_image}
                   alt={mod.name}
@@ -76,7 +85,7 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
 
               {/* Name */}
               <h3 className="text-base sm:text-lg font-[800] leading-tight px-1">
-                <ShinyText text={mod.name} speed={4} className="text-base sm:text-lg font-[800]" />
+                <ShinyText text={mod.name} speed={4} shineColor='#fff' color='#fff' className="text-base sm:text-lg font-[800]" />
               </h3>
 
               {/* Badges */}
@@ -120,38 +129,34 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
                 </Link>
               </div>
             </div>
-          ) : (
-            <div key={`pad-${i}`} className="invisible" />
-          )
-        )}
-      </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
       {/* Navigation */}
-      <div className="flex items-center justify-center gap-4 mt-8">
+      <div className="flex items-center w-55 p-2 rounded-[1rem] mx-auto  justify-center gap-4 mt-7 bg-black/30 backdrop-blur-lg">
         <button
           onClick={prev}
-          disabled={start === 0}
-          className="w-13 h-10 flex items-center justify-center rounded-lg border-2 border-[#333] bg-black/30 backdrop-blur-lg  text-[#ff6600] hover:border-[#ff6600] disabled:opacity-90  disabled:cursor-not-allowed transition-all"
+          className="w-13 h-13 flex items-center justify-center    text-[#ff6600] hover:border-[#ff6600] transition-all"
           aria-label="Previous"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronsLeft className="w-10 h-10" />
         </button>
 
         <button
           onClick={doShuffle}
-          className="w-13 h-13 flex items-center justify-center rounded-lg bg-black/30 backdrop-blur-lg border-2 border-[#444] text-white hover:border-[#ff6600] transition-all"
+          className="w-13 h-13 flex items-center justify-center rounded-[1rem] bg-black/30 backdrop-blur-lg border-2 border-[#444] text-white hover:border-[#ff6600] transition-all"
           aria-label="Shuffle"
         >
-          <Shuffle className="w-4 h-4" />
+          <Shuffle className="w-6 h-6" />
         </button>
 
         <button
           onClick={next}
-          disabled={start >= maxStart}
-          className="w-13 h-10 flex items-center justify-center rounded-lg border-2 border-[#333] bg-black/30 backdrop-blur-lg  text-[#ff6600] hover:border-[#ff6600] disabled:opacity-90 disabled:cursor-not-allowed transition-all"
+          className="w-13 h-13 flex items-center justify-center text-[#ff6600] hover:border-[#ff6600] transition-all"
           aria-label="Next"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronsRight className="w-10 h-10" />
         </button>
       </div>
     </section>

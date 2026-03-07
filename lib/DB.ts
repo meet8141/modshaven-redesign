@@ -63,12 +63,39 @@ export async function getAllMods() {
 	}));
 }
 
-export async function getModsPaginated(page: number = 1, perPage: number = 12) {
+export async function getModsPaginated(
+	page: number = 1,
+	perPage: number = 12,
+	filters: {
+		search?: string;
+		type?: string;
+		brand?: string;
+		game?: string;
+		sort?: string;
+	} = {}
+) {
 	await connectToDatabase();
+
+	// Build MongoDB filter query
+	const query: Record<string, any> = {};
+	if (filters.search) {
+		const re = new RegExp(filters.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+		query.$or = [{ name: re }, { description: re }, { author: re }];
+	}
+	if (filters.type  && filters.type  !== 'all') query.mod_type = filters.type;
+	if (filters.brand && filters.brand !== 'all') query.brand    = filters.brand;
+	if (filters.game  && filters.game  !== 'all') query.game     = filters.game;
+
+	// Build sort
+	let sortQuery: Record<string, 1 | -1> = { date_added: -1 };
+	if (filters.sort === 'oldest')    sortQuery = { date_added: 1 };
+	if (filters.sort === 'downloads') sortQuery = { downloads: -1 };
+	if (filters.sort === 'featured')  sortQuery = { featured: -1, date_added: -1 };
+
 	const skip = (page - 1) * perPage;
 	const [docs, totalCount] = await Promise.all([
-		ModModel.find().sort({ date_added: -1 }).skip(skip).limit(perPage).lean(),
-		ModModel.countDocuments(),
+		ModModel.find(query).sort(sortQuery).skip(skip).limit(perPage).lean(),
+		ModModel.countDocuments(query),
 	]);
 	const mods = docs.map((doc: any) => ({
 		...doc,

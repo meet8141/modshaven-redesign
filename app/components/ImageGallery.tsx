@@ -47,7 +47,7 @@ export default function ImageGallery({ images, alt }: ImageGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex justify-center items-center gap-2 sm:gap-3 p-2  w-[70%] h-20 sm:w-[80%] mx-auto   backdrop-blur-lg rounded-[0.5rem] overflow-x-auto overflow-y-hidden">
+        <div className="flex justify-center items-center gap-2 sm:gap-3 p-2  w-[90%] h-20 sm:w-[80%] mx-auto   backdrop-blur-lg rounded-[1rem] border-1 border-[#525252] overflow-x-auto overflow-y-hidden">
           {images.map((img, i) => (
             <button
               key={i}

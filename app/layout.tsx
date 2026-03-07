@@ -48,13 +48,13 @@ export default function RootLayout({
         className={`${inter.variable} antialiased`}
       >
         <NavBar items={navItems} />
-  <div style={{ width: '100%', height: '100%', position: 'fixed', top: 0, left: 0 }}>
+  <div style={{ width: '100%', height: '100%', position: 'fixed', top: 0, left: 0, zIndex: 0 }}>
        <PixelBlast
     variant="square"
-    pixelSize={5}
+    pixelSize={15}
     color="#d55500"
-    patternScale={7.5}
-    patternDensity={0.3}
+    patternScale={20}
+    patternDensity={0.1}
     pixelSizeJitter={0}
     enableRipples={false}
     rippleSpeed={0.4}
@@ -64,15 +64,18 @@ export default function RootLayout({
     liquidStrength={0.12}
     liquidRadius={1.2}
     liquidWobbleSpeed={5}
-    speed={1.05}
-    edgeFade={0.13}
-    transparent
+    speed={0.9}
+    edgeFade={0.3}
+
+    
   />
       </div>
 
 
        
-        {children}
+        <div className="relative" style={{ zIndex: 1 }}>
+          {children}
+        </div>
         <HoverFooter />
       </body>
     </html>

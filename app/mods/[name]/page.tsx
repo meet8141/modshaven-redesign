@@ -31,7 +31,7 @@ export default async function Home({ params }: Props) {
   if (!mod) return notFound();
 
   // Combine mod_image + images array for the gallery
-  const allImages = [mod.mod_image, ...(mod.images || [])].filter(Boolean);
+  const allImages = [ ...(mod.images || [])].filter(Boolean);
 
   // Recommended mods (random sample excluding current)
   const recommendedMods = await getRandomMods(mod.name, 8);
@@ -44,12 +44,12 @@ export default async function Home({ params }: Props) {
         {/* Main Content */}
         <main className="flex-1 p-2 sm:p-4 md:p-8 justify-center items-center mt-4">
             {/* mod details section */}
-          <div className="flex gap-2 md:gap-6 items-stretch mx-auto p-3 sm:p-4 md:p-10 md:px-30 justify-center flex-col lg:flex-row">
+          <div className="flex gap-2 md:gap-6 items-stretch mx-auto p-3 sm:p-4 md:p-10 md:px-30 justify-center flex-col lg:flex-row md:flex-col">
              {/* mod image */}
-            <div className="bg-black/30 backdrop-blur-lg w-full min-h-[300px] sm:min-h-[400px] rounded-[1rem] flex flex-col">
+            <div className="bg-black/30 backdrop-blur-lg w-full min-h-[300px] sm:min-h-[400px] rounded-[1rem] flex flex-col items-center">
               <ImageGallery images={allImages} alt={mod.name} />
               {/* Stats bar */}
-              <div className="flex justify-center items-center gap-2  sm:gap-4 md:gap-5 py-3 mt-[1rem] sm:mt-[1.5rem]">
+              <div className="flex justify-center items-center gap-2  sm:gap-4 md:gap-5 py-3 mt-[0.5rem] sm:mt-[0.5rem]">
                 <div className="flex flex-wrap justify-center  gap-2 sm:gap-4 bg-black/10 border-1 border-[#525252] backdrop-blur-lg rounded-[1rem] px-3 sm:px-6 py-4">
                   <p className="text-xs sm:text-sm text-[#a5a6b4] font-[900] flex gap-1 sm:gap-2 items-center">
                     <FolderArchive className="w-3 h-3 sm:w-4 sm:h-4 text-white" />{mod.downloads_size}
@@ -66,7 +66,7 @@ export default async function Home({ params }: Props) {
             {/* mod details */}
             <div className="bg-black/30 backdrop-blur-lg w-full rounded-[1rem] flex flex-col gap-3 sm:gap-5 lg:gap-7 p-3 sm:p-4 md:p-6">
               <h2 className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]">
-                <ShinyText text={mod.name} speed={4} className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]" />
+                <ShinyText text={mod.name} shineColor='#fff' color='#fff' speed={4} className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]" />
               </h2>
               <hr className="text-[#525252]" />
               <p className="text-sm sm:text-base font-[900] flex align-top items-start px-1 sm:px-3">{mod.description}</p>

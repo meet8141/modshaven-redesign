@@ -59,7 +59,7 @@ export default function Home() {
           100% { left: 100%; }
         }
         .animate-shine {
-          animation: shine 1s linear infinite;
+          animation: shine 2s linear infinite;
         }
       `}</style>
           </button>

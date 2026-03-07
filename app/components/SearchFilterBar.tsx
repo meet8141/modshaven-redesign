@@ -12,7 +12,7 @@ const BRANDS = [
   'all','Aston Martin','AUDI','BMW','Bugatti','Chevrolet','Dodge','Ferrari',
   'Ford','Honda','Infiniti','Kia','Lamborghini','Land Rover','Lexus',
   'Lotus','Mazda','McLaren','Mercedes','Mitsubishi','Nissan','Pagani',
-  'Peugeot','Porsche','Renault','Subaru','Toyota','Volkswagen','Volvo',
+  'Peugeot','Porsche','Renault','Subaru','Toyota','Volkswagen','Volvo','Skoda',
 ];
 
 const SORT_OPTIONS = [
@@ -149,6 +149,19 @@ export default function SearchFilterBar() {
           <ListFilterPlus className="w-5 h-5" />
           <span className="hidden sm:inline">Apply</span>
         </button>
+
+        {/* Clear button — only visible when something is active */}
+        {(search || activeFilterCount > 0) && (
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-2 px-5 py-3 rounded-[0.75rem]
+                       border-2 border-white/20 bg-transparent text-white/60 font-bold text-sm
+                       hover:border-white/50 hover:text-white transition-all duration-200"
+          >
+            <X className="w-4 h-4" />
+            <span className="hidden sm:inline">Clear</span>
+          </button>
+        )}
       </div>
 
       {/* ── Collapsible filter panel ── */}

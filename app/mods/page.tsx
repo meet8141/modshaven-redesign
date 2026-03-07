@@ -87,8 +87,15 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
                 className="bg-black/30 backdrop-blur-lg hover:border-[#ff6600] border-transparent border-2 hover:scale-101 transition-all duration-300 rounded-[1rem] p-4 flex flex-col gap-4"
                 key={mod._id}
               >
-                <div>
-                  <img src={mod.mod_image} alt={mod.name} className="w-full object-cover rounded-[1rem]" />
+              <div className="relative w-full aspect-video">
+                  <Image
+                    src={mod.mod_image}
+                    alt={mod.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover rounded-[1rem]"
+                    loading="lazy"
+                  />
                 </div>
                 <div className="flex flex-col gap-1 px-2">
                   <h2 className="text-[1.3rem] font-[900]">

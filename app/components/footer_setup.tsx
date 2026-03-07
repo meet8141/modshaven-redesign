@@ -106,8 +106,8 @@ function HoverFooter() {
       </div>
 
       {/* Text hover effect */}
-      <div className="lg:flex hidden h-[35rem] -mt-52 -mb-36">
-        <TextHoverEffect text="Modshaven" className="z-5 " />
+      <div className="lg:flex hidden h-[35rem] -mt-62 -mb-36">
+        <TextHoverEffect text="Modshaven" className="z-5 "duration={0.5} />
       </div>
 
       <FooterBackgroundGradient />

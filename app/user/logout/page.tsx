@@ -1,6 +1,6 @@
 // /user/logout page (GET)
 import React from 'react';
-import Grainient from '@/app/components/Grainient';
+
 
 export default function LogoutPage() {
   return (

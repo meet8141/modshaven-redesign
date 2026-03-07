@@ -1,6 +1,6 @@
 // /user/login page (GET)
 import React from 'react';
-import Grainient from '@/app/components/Grainient';
+
 import { MoveRight } from 'lucide-react';
 export default function LoginPage() {
   return (

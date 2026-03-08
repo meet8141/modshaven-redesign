@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { unstable_cache } from 'next/cache';
 
 let cached = (global as any).mongoose || { conn: null, promise: null };
 
@@ -44,6 +45,15 @@ const modSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
+// Indexes for common filter/sort fields
+modSchema.index({ date_added: -1 });
+modSchema.index({ downloads: -1 });
+modSchema.index({ mod_type: 1 });
+modSchema.index({ brand: 1 });
+modSchema.index({ game: 1 });
+modSchema.index({ featured: -1, date_added: -1 });
+modSchema.index({ name: 1, author: 1 }); // for regex search
+
 const ModModel = mongoose.models.Mod || mongoose.model('Mod', modSchema);
 
 // ── DB helpers ──
@@ -61,16 +71,16 @@ export async function getAllMods() {
 	}));
 }
 
-export async function getModsPaginated(
-	page: number = 1,
-	perPage: number = 12,
+async function _getModsPaginated(
+	page: number,
+	perPage: number,
 	filters: {
 		search?: string;
 		type?: string;
 		brand?: string;
 		game?: string;
 		sort?: string;
-	} = {}
+	}
 ) {
 	await connectToDatabase();
 
@@ -90,9 +100,15 @@ export async function getModsPaginated(
 	if (filters.sort === 'downloads') sortQuery = { downloads: -1 };
 	if (filters.sort === 'featured')  sortQuery = { featured: -1, date_added: -1 };
 
+	// Only fetch fields the listing page actually needs
+	const projection = {
+		name: 1, author: 1, game: 1, mod_image: 1,
+		downloads_size: 1, date_added: 1, brand: 1, mod_type: 1,
+	};
+
 	const skip = (page - 1) * perPage;
 	const [docs, totalCount] = await Promise.all([
-		ModModel.find(query).sort(sortQuery).skip(skip).limit(perPage).lean(),
+		ModModel.find(query, projection).sort(sortQuery).skip(skip).limit(perPage).lean(),
 		ModModel.countDocuments(query),
 	]);
 	const mods = docs.map((doc: any) => ({
@@ -104,6 +120,14 @@ export async function getModsPaginated(
 	}));
 	return { mods, totalCount, totalPages: Math.ceil(totalCount / perPage), currentPage: page };
 }
+
+// Cached version: DB results revalidate every 60 seconds per unique page+filters combo
+export const getModsPaginated = unstable_cache(
+	(page: number = 1, perPage: number = 12, filters: Parameters<typeof _getModsPaginated>[2] = {}) =>
+		_getModsPaginated(page, perPage, filters),
+	['mods-paginated'],
+	{ revalidate: 60 }
+);
 
 export async function getModByName(name: string) {
 	await connectToDatabase();

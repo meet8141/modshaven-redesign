@@ -49,11 +49,11 @@ export function NavBar({ items, className }: NavBarProps) {
   return (
     <div
       className={cn(
-        "fixed top-1 left-1/2 -translate-x-1/2 z-50",
+        "fixed bottom-2 sm:top-1  left-1/2 -translate-x-1/2 z-50",
         className,
       )}
     >
-      <div className="flex items-center gap-1 border-2 border-[#f44b00] backdrop-blur-lg py-2 px-2 rounded-full shadow-brand">
+      <div className="flex items-center w-80 sm:w-full gap-1 border-2 border-[#f44b00] backdrop-blur-lg py-2 px-2 rounded-full shadow-brand">
         {items.map((item) => {
           const Icon = iconMap[item.icon] || Home
           const isActive = item.url === pathname
@@ -63,7 +63,7 @@ export function NavBar({ items, className }: NavBarProps) {
               key={item.name}
               href={item.url}
               className={cn(
-                "relative cursor-pointer text-sm font-black px-6 py-2.5 rounded-full transition-all duration-200",
+                "relative cursor-pointer  text-sm font-black px-4.5 sm:px-6 py-2.5 rounded-full transition-all duration-200",
                 isActive 
                   ? "text-white" 
                   : "text-[#fff] hover:text-[#f44b00]",

@@ -106,7 +106,7 @@ export default function TermsOfService() {
         </div>
 
         {/* Acceptance footer */}
-        <div className="bg-[#ff6600]/10 border border-[#ff6600]/30 rounded-3xl p-6 flex items-start gap-4">
+        <div className="bg-[#ff6600]/20 backdrop-blur-lg border border-[#ff6600]/30 rounded-3xl p-6 flex items-start gap-4">
           <span className="w-8 h-[2px] bg-[#ff6600] rounded-full mt-3 shrink-0" />
           <p className="text-[#c4c9d4] text-sm leading-relaxed">
             By continuing to use Modshaven.com, you signify your acceptance of these Terms of Service.

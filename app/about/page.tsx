@@ -1,100 +1,108 @@
 "use client";
 
-import { Layers, Gamepad2, Telescope } from "lucide-react";
+import { Layers, Telescope, Award, Download, Users, Gamepad2, ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+const stats = [
+
+  { value: "22K+", label: "Members" },
+
+];
 
 const missionCards = [
   {
-    icon: <Layers size={28} />,
-    tag: "no cap",
+    icon: <Layers size={26} />,
+    tag: "Quality First",
     title: "Curated Mods",
-    body: "We carefully select and test mods to bring you high-quality content and exciting new ways to experience your favorite games.",
+    body: "Every mod is carefully reviewed and tested before listing, so you always get high-quality content that works as described.",
   },
   {
-    icon: <Gamepad2 size={28} />,
-    tag: "fr fr",
-    title: "Enhance Games",
-    body: "We believe that mods extend the life of games and create new experiences that developers never imagined.",
+    icon: <Award size={26} />,
+    tag: "Extend Gameplay",
+    title: "Enhance Your Games",
+    body: "Mods breathe new life into games — unlocking experiences developers never imagined and keeping titles fun for years.",
   },
   {
-    icon: <Telescope size={28} />,
-    tag: "let's gooo",
-    title: "Our Vision for the Future",
-    body: "We aim to connect modders and players, fostering a vibrant ecosystem for gaming enthusiasts as our platform evolves.",
+    icon: <Telescope size={26} />,
+    tag: "What's Next",
+    title: "Vision for the Future",
+    body: "We're building tools to connect modders and players, creating a thriving ecosystem for the entire gaming community.",
   },
 ];
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center px-4 pt-36 pb-24 overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24 overflow-hidden">
 
-     
+      {/* ── Page header ── */}
+      <div className="w-full max-w-4xl text-center mb-12">
+        <h1 className="text-white font-black text-4xl sm:text-5xl leading-tight mb-4">
+           About Mods Haven
+          
+        </h1>
+       
+      </div>
 
       {/* ── Bento grid ── */}
-      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
 
         {/* Our Story — tall card */}
-        <div className="sm:row-span-2 bg-[#0f0f0f]/95 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden hover:border-[#ff6600]/50 transition-all duration-300 flex flex-col justify-between">
-          {/* corner glow */}
-          <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#ff6600]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="sm:row-span-2 bg-black/50 backdrop-blur-lg border border-white/10 rounded-3xl p-8 relative overflow-hidden hover:border-[#ff6600]/50 transition-all duration-300 flex flex-col justify-between">
+          <div className="absolute bottom-50 right-0 w-56 h-56 bg-[#ff6600]/8 rounded-full blur-3xl pointer-events-none" />
 
           <div>
-            <span className="inline-block text-[10px] font-black tracking-[0.3em] uppercase bg-[#ff6600]/15 text-[#ff8833] px-3 py-1 rounded-full mb-5">
-              origin story 🔥
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] uppercase bg-[#ff6600]/15 text-[#ff8833] px-3 py-1 rounded-full mb-5">
+              Our Origin
             </span>
             <h2 className="text-white font-black text-3xl mb-5 leading-tight">Our Story</h2>
 
             <div className="space-y-4">
               <p className="text-[#c4c9d4] text-sm leading-relaxed">
-                What started as a small passion project is becoming a platform with a growing
-                collection of mods for popular games. We aim to enhance gameplay by offering
-                players exciting new ways to experience their favorite titles.
+                Mods Haven started as a small passion project with one goal: make finding quality
+                game mods easy. No clutter, no shady downloads — just a clean, trustworthy place
+                for gamers to explore new experiences.
               </p>
               <p className="text-[#c4c9d4] text-sm leading-relaxed">
-                Mods Haven began with a simple vision: to create an accessible space for gaming
-                modifications.
+                We believe modifications are one of gaming's greatest gifts. They extend the life
+                of games, spark creativity, and bring communities together around shared passion.
               </p>
               <p className="text-[#c4c9d4] text-sm leading-relaxed">
-                Currently, we are building a diverse selection of mods, ranging from simple
-                improvements to more significant changes, all geared towards enriching the player
-                experience. We are enthusiastic about the future growth of Modshaven.com.
+                Today we're growing our library — from simple tweaks to large-scale overhauls —
+                and we're just getting started. Every mod we add is one more way for players to
+                enjoy the games they love.
               </p>
             </div>
           </div>
 
-          {/* bottom tag */}
           <div className="mt-8 flex items-center gap-2">
             <span className="w-8 h-[2px] bg-[#ff6600] rounded-full" />
-            <span className="text-[#ff6600] text-xs font-bold tracking-widest uppercase">Modshaven.com</span>
+            <span className="text-[#ff6600] text-xs font-bold tracking-widest uppercase">Team Modshaven</span>
           </div>
         </div>
 
-        {/* Mission headline card */}
-        <div className="bg-gradient-to-br from-[#ff6600]/20 to-[#ff3d00]/5 border border-[#ff6600]/25 rounded-3xl p-8 relative overflow-hidden flex flex-col justify-center">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#ff6600]/15 rounded-full blur-2xl pointer-events-none" />
+        {/* Mission card */}
+        <div className="bg-black/50 border hover:border-[#ff6600]/40 border-white/10 rounded-3xl backdrop-blur-lg p-8 relative overflow-hidden flex flex-col justify-center">
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#ff6600]/12 rounded-full blur-2xl pointer-events-none" />
           <span className="text-2xl mb-3">🎯</span>
           <h2 className="text-white font-black text-2xl leading-tight mb-3">Our Mission</h2>
           <p className="text-[#c4c9d4] text-sm leading-relaxed">
-            Most accessible, creator-friendly platform for game mods — fostering a{" "}
-            <span className="text-[#ff8833] font-semibold">community where innovation thrives.</span>
+            To be the most accessible, creator-friendly platform for game mods — fostering a{" "}
+            <span className="text-[#ff8833] font-semibold">community where innovation thrives</span>{" "}
+            and every player can customize their experience.
           </p>
         </div>
 
-        {/* stats / vibe card */}
-        <div className="bg-[#0f0f0f]/95 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-center gap-5 hover:border-[#ff6600]/50 transition-all duration-300">
-          <div className="flex items-center gap-4">
-            <span className="text-3xl">🚀</span>
-            <div>
-              <p className="text-white font-black text-lg leading-none">Growing fast</p>
-              <p className="text-[#888] text-xs mt-1">new mods dropping regularly</p>
-            </div>
-          </div>
-          <div className="w-full h-px bg-white/5" />
-          <div className="flex items-center gap-4">
-            <span className="text-3xl">🎮</span>
-            <div>
-              <p className="text-white font-black text-lg leading-none">All your fav games</p>
-              <p className="text-[#888] text-xs mt-1">from simple tweaks to massive overhauls</p>
-            </div>
+        {/* Stats card */}
+        <div className="bg-black/50 border border-white/10 hover:border-[#ff6600]/40 rounded-3xl backdrop-blur-lg p-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-40 h-40 bg-[#ff6600]/8 rounded-full blur-3xl pointer-events-none" />
+          <h2 className="text-white font-black text-lg mb-5">By the Numbers</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {stats.map(({ value, label }) => (
+              <div key={label} className="flex flex-col gap-0.5">
+                <span className="text-[#ff6600] font-black text-2xl leading-none">{value}</span>
+                <span className="text-[#9099a6] text-xs font-medium">{label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -104,12 +112,11 @@ export default function AboutPage() {
         {missionCards.map(({ icon, tag, title, body }) => (
           <div
             key={title}
-            className="group bg-[#0f0f0f]/95 backdrop-blur-xl border-2 border-white/10 hover:border-[#ff6600] rounded-3xl px-7 py-8 flex flex-col gap-4 transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,102,0,0.12)] relative overflow-hidden"
+            className="group bg-black/50 backdrop-blur-xl border border-white/10 hover:border-[#ff6600] rounded-3xl px-7 py-8 flex flex-col gap-4 transition-all duration-300 relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#ff6600]/0 to-[#ff6600]/0 group-hover:from-[#ff6600]/5 group-hover:to-transparent transition-all duration-500 rounded-3xl pointer-events-none" />
             <div className="flex items-start justify-between">
               <span className="text-[#ff6600]">{icon}</span>
-              <span className="text-[10px] font-black text-[#ff6600]/60 tracking-widest uppercase bg-[#ff6600]/10 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold text-[#ff8833]/70 tracking-wider uppercase bg-[#ff6600]/10 px-2.5 py-1 rounded-full">
                 {tag}
               </span>
             </div>
@@ -117,6 +124,24 @@ export default function AboutPage() {
             <p className="text-[#c4c9d4] text-sm leading-relaxed">{body}</p>
           </div>
         ))}
+      </div>
+
+      {/* ── CTA ── */}
+      <div className="w-full max-w-4xl mt-6">
+        <div className="bg-black/50 backdrop-blur-lg border border-[#ff6600]/30 rounded-3xl p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <div>
+            <h3 className="text-white font-black text-2xl mb-2">Ready to explore?</h3>
+            <p className="text-[#9099a6] text-sm max-w-sm">
+              Browse hundreds of free mods across your favorite games and start customizing today.
+            </p>
+          </div>
+          <Link
+            href="/mods"
+            className="flex-shrink-0 inline-flex items-center gap-2 bg-[#ff6600] hover:bg-[#e55a00] text-white font-bold text-sm px-6 py-3 rounded-full transition-colors duration-200"
+          >
+            Browse Mods <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
 
     </main>

@@ -76,7 +76,7 @@ export default function Home() {
           <h2 className="text-4xl font-bold text-white mb-10 text-center">How It Works</h2>
           <div className="flex flex-col md:flex-row gap-8 w-full justify-center">
             {/* Step 1 */}
-            <div className="bg-black/30 backdrop-blur-lg rounded-[1rem]   hover:border-[#ff6600]  border-transparent  border-2   hover:scale-101 transition-all duration-300  flex-1 flex flex-col items-center p-8 min-w-[260px] max-w-[350px]">
+            <div className="bg-black/50 backdrop-blur-lg rounded-[1rem]   hover:border-[#ff6600]  border-transparent  border-2   hover:scale-101 transition-all duration-300  flex-1 flex flex-col items-center p-8 min-w-[260px] max-w-[350px]">
               <span className="mb-4 text-4xl">
                 <FolderSearch className="w-10 h-10 text-white" />
               </span>
@@ -84,7 +84,7 @@ export default function Home() {
               <p className="text-gray-300 font-semibold text-center">Browse our extensive collection of game modifications.</p>
             </div>
             {/* Step 2 */}
-            <div className="bg-black/30 backdrop-blur-lg rounded-[1rem]    hover:border-[#ff6600]  border-transparent  border-2   hover:scale-101 transition-all duration-300  flex-1 flex flex-col items-center p-8 min-w-[260px] max-w-[350px]">
+            <div className="bg-black/50 backdrop-blur-lg rounded-[1rem]    hover:border-[#ff6600]  border-transparent  border-2   hover:scale-101 transition-all duration-300  flex-1 flex flex-col items-center p-8 min-w-[260px] max-w-[350px]">
               <span className="mb-4 text-4xl">
                 <Download className="w-10 h-10 text-white" />
               </span>
@@ -92,7 +92,7 @@ export default function Home() {
               <p className="text-gray-300 font-semibold text-center">Download mods with just a single click.</p>
             </div>
             {/* Step 3 */}
-            <div className="bg-black/30 backdrop-blur-lg rounded-[1rem]   hover:border-[#ff6600]  border-transparent  border-2   hover:scale-101 transition-all duration-300 flex-1 flex flex-col items-center p-8 min-w-[260px] max-w-[350px]">
+            <div className="bg-black/50 backdrop-blur-lg rounded-[1rem]   hover:border-[#ff6600]  border-transparent  border-2   hover:scale-101 transition-all duration-300 flex-1 flex flex-col items-center p-8 min-w-[260px] max-w-[350px]">
               <span className="mb-4 text-4xl">
                 <Gamepad className="w-10 h-10 text-white" />
               </span>
@@ -102,7 +102,7 @@ export default function Home() {
           </div>
         </div>
         {/* community card section */}
-        <div className="mt-16 w-[98%] gap-8 max-w-6xl p-8 bg-black/30 backdrop-blur-lg rounded-[1rem]   hover:border-[#ff6600]  border-transparent  border-2   transition-all duration-300  text-white flex flex-col-reverse md:flex-row sm:flex-col-reverse items-center  justify-between   mx-auto ">
+        <div className="mt-16 w-[98%] gap-8 max-w-6xl p-8 bg-black/50 backdrop-blur-lg rounded-[1rem]   hover:border-[#ff6600]  border-transparent  border-2   transition-all duration-300  text-white flex flex-col-reverse md:flex-row sm:flex-col-reverse items-center  justify-between   mx-auto ">
           <div className="max-w-xl">
             <h2 className="text-3xl font-bold">Join Our Community</h2>
             <p className="mt-4 font-[800]">

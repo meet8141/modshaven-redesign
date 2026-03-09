@@ -65,7 +65,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
 
           {/* ── Mod grid ── */}
           {mods.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 w-full max-w-4xl max-h-4xl mx-auto gap-4 text-center bg-black/30 backdrop-blur-lg rounded-[1rem]">
+            <div className="flex flex-col items-center justify-center py-24 w-full max-w-4xl max-h-4xl mx-auto gap-4 text-center bg-black/50 backdrop-blur-lg rounded-[1rem]">
               <div className="text-6xl"><SearchX className="text-[#ff6600] w-40 h-40" /></div>
               <h2 className="text-2xl font-[800] text-white">No mods found</h2>
               <p className="text-[#a5a6b4] font-[600] max-w-sm">
@@ -82,7 +82,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {mods.map((mod: any) => (
               <div
-                className="bg-black/30 backdrop-blur-lg hover:border-[#ff6600] border-transparent border-2 hover:scale-101 transition-all duration-300 rounded-[1rem] p-4 flex flex-col gap-4"
+                className="bg-black/50 backdrop-blur-lg hover:border-[#ff6600] border-transparent border-2 hover:scale-101 transition-all duration-300 rounded-[1rem] p-4 flex flex-col gap-4"
                 key={mod._id}
               >
               <div className="relative w-full aspect-video">
@@ -216,7 +216,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
           })()}
 
           {/* ── Community card ── */}
-          <div className="mt-16 w-[98%] gap-8 max-w-6xl p-8 bg-black/30 backdrop-blur-lg rounded-[1rem] hover:border-[#ff6600] border-transparent border-2 transition-all duration-300 text-white flex flex-col-reverse md:flex-row sm:flex-col-reverse items-center justify-between mx-auto">
+          <div className="mt-16 w-[98%] gap-8 max-w-6xl p-8 bg-black/50 backdrop-blur-lg rounded-[1rem] hover:border-[#ff6600] border-transparent border-2 transition-all duration-300 text-white flex flex-col-reverse md:flex-row sm:flex-col-reverse items-center justify-between mx-auto">
             <div className="max-w-xl">
               <h2 className="text-3xl font-bold">Join Our Community</h2>
               <p className="mt-4 font-[800]">

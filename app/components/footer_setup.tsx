@@ -50,7 +50,7 @@ function HoverFooter() {
   // Social media icons
  
   return (
-    <footer className="bg-[#0F0F11]/10 relative h-fit rounded-[1rem] overflow-hidden backdrop-blur-sm m-8">
+    <footer className="bg-black/50 relative h-fit rounded-[1rem] overflow-hidden backdrop-blur-sm m-8">
       <div className="max-w-7xl mx-auto p-8 z-40 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 lg:gap-10 pb-12">
           {/* Brand section */}

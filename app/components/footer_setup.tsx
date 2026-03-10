@@ -55,11 +55,11 @@ function HoverFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 lg:gap-10 pb-12">
           {/* Brand section */}
           <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-[#3ca2fa] text-3xl font-extrabold">
-                <img src="/icon/logo_1.png" alt="" className="h-[50px]" />
-              </span>
-              <span className="text-white text-3xl font-bold">Modshaven</span>
+            <div className="flex items-center justify-center space-x-2 ">
+              
+                <img src="/icon/logo_1.png" alt="" className="h-[50px] " />
+             
+              <span className="text-white text-3xl font-bold">odshaven</span>
             </div>
             <p className="text-sm leading-relaxed font-[700] text-[#a7a8b5]">
               Your ultimate destination for game modifications, tools, and resources.

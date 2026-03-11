@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Mods Haven - Terms of Service",
+  description: "Learn about the terms and conditions for using Modshaven.com.",
+  icons: {
+    icon: '/icon/logo_1.ico',
+  },
+};
 export default function TermsOfService() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

@@ -45,7 +45,7 @@ export default async function Home({ params }: Props) {
         {/* Main Content */}
         <main className="flex-1 p-2 sm:p-4 md:p-8 justify-center items-center mt-4">
             {/* mod details section */}
-          <div className="flex gap-2 md:gap-6 items-stretch mx-auto p-3 sm:p-4 md:p-10 md:px-30 justify-center flex-col lg:flex-row md:flex-col">
+          <div className="flex gap-2 md:gap-6 items-stretch  mx-auto p-3 sm:p-4 md:p-10 md:px-30 justify-center flex-col lg:flex-row md:flex-col">
              {/* mod image */}
             <div className="bg-black/50 backdrop-blur-lg w-full min-h-[300px] sm:min-h-[400px] rounded-[1rem] flex flex-col items-center">
               <ImageGallery images={allImages} alt={mod.name} />

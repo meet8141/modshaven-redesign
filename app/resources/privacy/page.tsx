@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Mods Haven - Privacy Policy",
+  description: "Learn how we collect, use, and protect your personal information on Modshaven.com",
+  icons: {
+    icon: '/icon/logo_1.ico',
+  },
+};
 export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

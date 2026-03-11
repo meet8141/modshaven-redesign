@@ -50,9 +50,10 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
   }, []);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 mt-10 sm:mt-16">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 mt-10 sm:mt-1">
       {/* Heading */}
       <div className="flex flex-col items-center mb-8">
+        
         <ShinyText text="Recommended Mods" speed={4} shineColor='#fff' color='#fff' className="text-2xl sm:text-3xl font-[800]" />
       </div>
 

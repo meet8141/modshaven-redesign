@@ -28,8 +28,8 @@ const DiscordStatsComponent: React.FC = () => {
 
   return (
      <>
-      <span className="text-gray-300 flex items-center gap-2 "><span className='bg-green-500 fixed rounded-full w-3 h-3 inline-block ' > </span><span className='bg-green-500 fixed rounded-full w-3 h-3 inline-block animate-ping ' > </span><p className='ml-5 '>{stats.onlineCount} Online </p></span>
-      <span className="text-gray-300 flex items-center gap-2 "><span className='bg-gray-100 fixed rounded-full w-3 h-3 inline-block ' > </span><p className='ml-5 '>{stats.memberCount} Members</p></span>
+      <span className="text-gray-300 flex items-center gap-2 "><span className='bg-green-500 fixed rounded-full w-3 h-3 inline-block ' > </span><span className='bg-green-500 fixed rounded-full w-3 h-3 inline-block animate-ping ' > </span><p className='ml-5 '>{stats.onlineCount.toLocaleString()} Online </p></span>
+      <span className="text-gray-300 flex items-center gap-2 "><span className='bg-gray-100 fixed rounded-full w-3 h-3 inline-block ' > </span><p className='ml-5 '>{stats.memberCount.toLocaleString()} Members</p></span>
      </>
   );
 };

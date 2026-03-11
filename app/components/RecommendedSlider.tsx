@@ -145,7 +145,7 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
 
         <button
           onClick={doShuffle}
-          className="w-13 h-13 flex items-center justify-center rounded-[1rem] bg-black/30 backdrop-blur-lg border-2 border-[#444] text-white hover:border-[#ff6600] transition-all"
+          className="w-13 h-13 flex items-center justify-center rounded-[1rem] bg-black/10 backdrop-blur-lg border-1 border-[#444] text-white hover:border-[#ff6600] transition-all"
           aria-label="Shuffle"
         >
           <Shuffle className="w-6 h-6" />

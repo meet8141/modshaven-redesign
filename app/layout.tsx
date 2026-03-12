@@ -4,6 +4,7 @@ import "./globals.css";
 import  HoverFooter from "./components/footer_setup";
 import { NavBar } from "./components/tubelight-navbar"
 import PixelBlast from '@/app/components/PixelBlast';
+import PageTransition from '@/app/components/PageTransition';
 
 const navItems = [
     { name: 'Home', url: '/', icon: 'Home' },
@@ -72,7 +73,7 @@ export default function RootLayout({
 
        
         <div className="relative " style={{ zIndex: 1 }}>
-          {children}
+          <PageTransition>{children}</PageTransition>
         </div>
         <HoverFooter />
       </body>

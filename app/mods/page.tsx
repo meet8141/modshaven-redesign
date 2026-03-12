@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Image from "next/image";
 import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive, ArrowLeft, ArrowRight,SearchX } from 'lucide-react';
 import Link from "next/link";
@@ -17,24 +18,7 @@ export const metadata: Metadata = {
 };
 
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; type?: string; brand?: string; game?: string; sort?: string }> }) {
-  const { page: pageParam, search, type, brand, game, sort } = await searchParams;
-  const currentPage = Math.max(1, parseInt(pageParam || '1', 10) || 1);
-
-  const filters = { search, type, brand, game, sort };
-  const { mods, totalPages } = await getModsPaginated(currentPage, 12, filters);
-
-  // Helper: build a URL for pagination that preserves active filters
-  const pageUrl = (p: number) => {
-    const params: Record<string, string> = { page: String(p) };
-    if (search) params.search = search;
-    if (type  && type  !== 'all') params.type  = type;
-    if (brand && brand !== 'all') params.brand = brand;
-    if (game  && game  !== 'all') params.game  = game;
-    if (sort  && sort  !== 'latest') params.sort = sort;
-    return `/mods?${new URLSearchParams(params).toString()}`;
-  };
-
+export default function Home({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; type?: string; brand?: string; game?: string; sort?: string }> }) {
   return (
     <>
       <div
@@ -43,7 +27,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
       >
         <main className="w-full">
 
-       
           <div className="mb-6 mt-5 ">
             <ShinyText
               text="Browse Mods"
@@ -63,157 +46,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
           {/* ── Search + Filter bar ── */}
           <SearchFilterBar />
 
-          {/* ── Mod grid ── */}
-          {mods.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 w-full max-w-4xl max-h-4xl mx-auto gap-4 text-center bg-black/50 backdrop-blur-lg rounded-[1rem]">
-              <div className="text-6xl"><SearchX className="text-[#ff6600] w-40 h-40" /></div>
-              <h2 className="text-2xl font-[800] text-white">No mods found</h2>
-              <p className="text-[#a5a6b4] font-[600] max-w-sm">
-                Nothing matched your filters. Try a different search term or clear some filters to see more mods.
-              </p>
-              <Link
-                href="/mods"
-                className="mt-2 px-5 py-2 rounded-[0.75rem] border-2 border-[#ff6600] text-[#ff6600] font-[700] hover:bg-[#ff6600] hover:text-white transition-all"
-              >
-                Clear filters
-              </Link>
-            </div>
-          ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {mods.map((mod: any) => (
-              <div
-                className="bg-black/50 backdrop-blur-lg hover:border-[#ff6600] border-transparent border-2 hover:scale-101 transition-all duration-300 rounded-[1rem] p-4 flex flex-col gap-4"
-                key={mod._id}
-              >
-              <div className="relative w-full aspect-video">
-                  <Image
-                    src={mod.mod_image}
-                    alt={mod.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover rounded-[1rem]"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="flex flex-col gap-1 px-2">
-                  <h2 className="text-[1.3rem] font-[900] text-white leading-tight">
-                    {mod.name}
-                  </h2>
-                  <p className="text-[0.9rem] text-white font-[700]">By {mod.author}</p>
-                </div>
-                <div className="flex gap-2 px-2">
-                  <p className="text-[13px] text-[#a5a6b4] font-[900] flex items-center gap-1">
-                    <FolderArchive className="w-4 h-4 text-white" />{mod.downloads_size}
-                  </p>
-                  <p className="text-[13px] text-[#a5a6b4] font-[900] flex items-center gap-1">
-                    <CalendarFold className="w-4 h-4 text-white" />
-                    {mod.date_added ? mod.date_added.split('T')[0] : ''}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="border-2 border-[#563a1a] w-[160px] p-2 rounded-[0.5rem] bg-[#362a1f] flex items-center justify-center gap-2">
-                    <Image
-                      src={mod.game === "BeamNG.drive" ? "/icon/icon-beamng.ico" : "/icon/icon-assetto.ico"}
-                      alt={mod.game}
-                      width={24}
-                      height={24}
-                      style={{ borderRadius: 4 }}
-                    />
-                    <p className="text-[1rem] font-[700]">{mod.game}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    {mod.brand && mod.mod_type !== "truck" && mod.mod_type !== "maps" && (
-                      <div className="flex items-center justify-center gap-2 border-2 border-[#3b2352] w-[150px] h-11 p-2 rounded-[0.5rem] bg-[#2a2036]">
-                        <BrandIcon brand={mod.brand} width={25} height={25} />
-                        <p className="text-[0.9rem] font-[700]">{mod.brand}</p>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-center gap-1 border-2 w-16 p-2 rounded-[0.5rem] bg-[#222938] border-[#294371]">
-                      <div className="flex items-center justify-center">
-                        {mod.mod_type === "car"   && <CarFront className="w-4 h-4" />}
-                        {mod.mod_type === "truck" && <Truck    className="w-4 h-4" />}
-                        {mod.mod_type === "maps"  && <Map      className="w-4 h-4" />}
-                      </div>
-                      <p className="text-[13px] font-[700]">{mod.mod_type}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <Link
-                  href={`/mods/${encodeURIComponent(mod.name)}`}
-                  className="border-2 border-[#ff6600] w-10 p-2 rounded-[50%] flex items-center justify-center hover:bg-[#362a1f] hover:text-white transition-colors"
-                  title={`Go to ${mod.name}`}
-                >
-                  <ArrowUpRight className="w-5 h-5 text-[#ff6600] group-hover:text-white" />
-                </Link>
-              </div>
-            ))}
-          </div>
-          )}
-
-          {/* ── Pagination ── */}
-          {totalPages > 1 && (() => {
-            const pages: (number | '...')[] = [];
-            const maxVisible = 3; // keeps it compact on mobile; still readable on desktop
-
-            if (totalPages <= maxVisible + 2) {
-              for (let i = 1; i <= totalPages; i++) pages.push(i);
-            } else {
-              let start = Math.max(1, currentPage - 1);
-              let end   = Math.min(totalPages, currentPage + 1);
-              if (end - start < maxVisible - 1) {
-                if (start === 1) end   = Math.min(totalPages, start + maxVisible - 1);
-                else             start = Math.max(1, end - maxVisible + 1);
-              }
-              for (let i = start; i <= end; i++) pages.push(i);
-              if (end < totalPages - 1) pages.push('...');
-              if (end < totalPages)     pages.push(totalPages);
-              if (start > 2)            pages.unshift('...');
-              if (start > 1)            pages.unshift(1);
-            }
-
-            const navBtn   = 'flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-[0.75rem] border border-[#ff6600] font-bold transition-colors';
-            const activeBtn = `${navBtn} bg-[#ff6600] text-white`;
-            const inactiveBtn = `${navBtn} bg-transparent backdrop-blur-lg text-[#a5a6b4] hover:text-white`;
-            const disabledBtn = `${navBtn} text-[#555] cursor-not-allowed select-none`;
-
-            return (
-              <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 mt-12 px-2">
-                {/* Prev */}
-                {currentPage > 1 ? (
-                  <Link href={pageUrl(currentPage - 1)} className={inactiveBtn}>
-                    <ArrowLeft className="w-4 h-4" />
-                  </Link>
-                ) : (
-                  <span className={disabledBtn}><ArrowLeft className="w-4 h-4" /></span>
-                )}
-
-                {/* Page numbers */}
-                {pages.map((p, i) =>
-                  p === '...' ? (
-                    <span key={`ellipsis-${i}`} className="w-8 text-center text-[#a5a6b4] font-bold text-sm select-none">…</span>
-                  ) : (
-                    <Link
-                      key={p}
-                      href={pageUrl(p as number)}
-                      className={p === currentPage ? activeBtn : inactiveBtn}
-                    >
-                      {p}
-                    </Link>
-                  )
-                )}
-
-                {/* Next */}
-                {currentPage < totalPages ? (
-                  <Link href={pageUrl(currentPage + 1)} className={inactiveBtn}>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                ) : (
-                  <span className={disabledBtn}><ArrowRight className="w-4 h-4" /></span>
-                )}
-              </div>
-            );
-          })()}
+          {/* ── Mod grid (streams in while shell above is already visible) ── */}
+          <Suspense fallback={<ModsSkeleton />}>
+            <ModsGrid searchParams={searchParams} />
+          </Suspense>
 
           {/* ── Community card ── */}
           <div className="mt-16 w-[98%] gap-8 max-w-6xl p-8 bg-black/50 backdrop-blur-lg rounded-[1rem] hover:border-[#ff6600] border-transparent border-2 transition-all duration-300 text-white flex flex-col-reverse md:flex-row sm:flex-col-reverse items-center justify-between mx-auto">
@@ -249,6 +85,200 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
 
         </main>
       </div>
+    </>
+  );
+}
+
+// ── Skeleton shown while the DB query is in flight ──────────────────────────
+function ModsSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-6">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div key={i} className="bg-black/50 backdrop-blur-lg border-2 border-transparent rounded-[1rem] p-4 flex flex-col gap-4 animate-pulse">
+          <div className="w-full aspect-video bg-white/10 rounded-[1rem]" />
+          <div className="flex flex-col gap-2 px-2">
+            <div className="h-5 bg-white/10 rounded w-3/4" />
+            <div className="h-4 bg-white/10 rounded w-1/2" />
+          </div>
+          <div className="flex gap-2 px-2">
+            <div className="h-4 bg-white/10 rounded w-1/4" />
+            <div className="h-4 bg-white/10 rounded w-1/4" />
+          </div>
+          <div className="h-9 bg-white/10 rounded-[0.5rem] w-full mt-auto" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Async component: does the DB call, streams in when ready ─────────────────
+async function ModsGrid({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; type?: string; brand?: string; game?: string; sort?: string }> }) {
+  const { page: pageParam, search, type, brand, game, sort } = await searchParams;
+  const currentPage = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+
+  const filters = { search, type, brand, game, sort };
+  const { mods, totalPages } = await getModsPaginated(currentPage, 12, filters);
+
+  const pageUrl = (p: number) => {
+    const params: Record<string, string> = { page: String(p) };
+    if (search) params.search = search;
+    if (type  && type  !== 'all') params.type  = type;
+    if (brand && brand !== 'all') params.brand = brand;
+    if (game  && game  !== 'all') params.game  = game;
+    if (sort  && sort  !== 'latest') params.sort = sort;
+    return `/mods?${new URLSearchParams(params).toString()}`;
+  };
+
+  return (
+    <>
+      {mods.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 w-full max-w-4xl max-h-4xl mx-auto gap-4 text-center bg-black/50 backdrop-blur-lg rounded-[1rem]">
+          <div className="text-6xl"><SearchX className="text-[#ff6600] w-40 h-40" /></div>
+          <h2 className="text-2xl font-[800] text-white">No mods found</h2>
+          <p className="text-[#a5a6b4] font-[600] max-w-sm">
+            Nothing matched your filters. Try a different search term or clear some filters to see more mods.
+          </p>
+          <Link
+            href="/mods"
+            className="mt-2 px-5 py-2 rounded-[0.75rem] border-2 border-[#ff6600] text-[#ff6600] font-[700] hover:bg-[#ff6600] hover:text-white transition-all"
+          >
+            Clear filters
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {mods.map((mod: any, index: number) => (
+            <div
+              className="bg-black/50 backdrop-blur-lg hover:border-[#ff6600] border-transparent border-2 hover:scale-101 transition-all duration-300 rounded-[1rem] p-4 flex flex-col gap-4"
+              key={mod._id}
+            >
+            <div className="relative w-full aspect-video">
+                <Image
+                  src={mod.mod_image}
+                  alt={mod.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-cover rounded-[1rem]"
+                  priority={index < 4}
+                  loading={index < 4 ? undefined : 'lazy'}
+                />
+              </div>
+              <div className="flex flex-col gap-1 px-2">
+                <h2 className="text-[1.3rem] font-[900] text-white leading-tight">
+                  {mod.name}
+                </h2>
+                <p className="text-[0.9rem] text-white font-[700]">By {mod.author}</p>
+              </div>
+              <div className="flex gap-2 px-2">
+                <p className="text-[13px] text-[#a5a6b4] font-[900] flex items-center gap-1">
+                  <FolderArchive className="w-4 h-4 text-white" />{mod.downloads_size}
+                </p>
+                <p className="text-[13px] text-[#a5a6b4] font-[900] flex items-center gap-1">
+                  <CalendarFold className="w-4 h-4 text-white" />
+                  {mod.date_added ? mod.date_added.split('T')[0] : ''}
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="border-2 border-[#563a1a] w-[160px] p-2 rounded-[0.5rem] bg-[#362a1f] flex items-center justify-center gap-2">
+                  <Image
+                    src={mod.game === "BeamNG.drive" ? "/icon/icon-beamng.ico" : "/icon/icon-assetto.ico"}
+                    alt={mod.game}
+                    width={24}
+                    height={24}
+                    style={{ borderRadius: 4 }}
+                  />
+                  <p className="text-[1rem] font-[700]">{mod.game}</p>
+                </div>
+                <div className="flex gap-2">
+                  {mod.brand && mod.mod_type !== "truck" && mod.mod_type !== "maps" && (
+                    <div className="flex items-center justify-center gap-2 border-2 border-[#3b2352] w-[150px] h-11 p-2 rounded-[0.5rem] bg-[#2a2036]">
+                      <BrandIcon brand={mod.brand} width={25} height={25} />
+                      <p className="text-[0.9rem] font-[700]">{mod.brand}</p>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-center gap-1 border-2 w-16 p-2 rounded-[0.5rem] bg-[#222938] border-[#294371]">
+                    <div className="flex items-center justify-center">
+                      {mod.mod_type === "car"   && <CarFront className="w-4 h-4" />}
+                      {mod.mod_type === "truck" && <Truck    className="w-4 h-4" />}
+                      {mod.mod_type === "maps"  && <Map      className="w-4 h-4" />}
+                    </div>
+                    <p className="text-[13px] font-[700]">{mod.mod_type}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href={`/mods/${encodeURIComponent(mod.name)}`}
+                className="border-2 border-[#ff6600] w-10 p-2 rounded-[50%] flex items-center justify-center hover:bg-[#362a1f] hover:text-white transition-colors"
+                title={`Go to ${mod.name}`}
+              >
+                <ArrowUpRight className="w-5 h-5 text-[#ff6600] group-hover:text-white" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Pagination ── */}
+      {totalPages > 1 && (() => {
+        const pages: (number | '...')[] = [];
+        const maxVisible = 3;
+
+        if (totalPages <= maxVisible + 2) {
+          for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+          let start = Math.max(1, currentPage - 1);
+          let end   = Math.min(totalPages, currentPage + 1);
+          if (end - start < maxVisible - 1) {
+            if (start === 1) end   = Math.min(totalPages, start + maxVisible - 1);
+            else             start = Math.max(1, end - maxVisible + 1);
+          }
+          for (let i = start; i <= end; i++) pages.push(i);
+          if (end < totalPages - 1) pages.push('...');
+          if (end < totalPages)     pages.push(totalPages);
+          if (start > 2)            pages.unshift('...');
+          if (start > 1)            pages.unshift(1);
+        }
+
+        const navBtn      = 'flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-[0.75rem] border border-[#ff6600] font-bold transition-colors';
+        const activeBtn   = `${navBtn} bg-[#ff6600] text-white`;
+        const inactiveBtn = `${navBtn} bg-transparent backdrop-blur-lg text-[#a5a6b4] hover:text-white`;
+        const disabledBtn = `${navBtn} text-[#555] cursor-not-allowed select-none`;
+
+        return (
+          <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 mt-12 px-2">
+            {currentPage > 1 ? (
+              <Link href={pageUrl(currentPage - 1)} className={inactiveBtn}>
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+            ) : (
+              <span className={disabledBtn}><ArrowLeft className="w-4 h-4" /></span>
+            )}
+
+            {pages.map((p, i) =>
+              p === '...' ? (
+                <span key={`ellipsis-${i}`} className="w-8 text-center text-[#a5a6b4] font-bold text-sm select-none">…</span>
+              ) : (
+                <Link
+                  key={p}
+                  href={pageUrl(p as number)}
+                  className={p === currentPage ? activeBtn : inactiveBtn}
+                >
+                  {p}
+                </Link>
+              )
+            )}
+
+            {currentPage < totalPages ? (
+              <Link href={pageUrl(currentPage + 1)} className={inactiveBtn}>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <span className={disabledBtn}><ArrowRight className="w-4 h-4" /></span>
+            )}
+          </div>
+        );
+      })()}
     </>
   );
 }

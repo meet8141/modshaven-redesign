@@ -44,7 +44,9 @@ export default function Home({ searchParams }: { searchParams: Promise<{ page?: 
           </div>
 
           {/* ── Search + Filter bar ── */}
-          <SearchFilterBar />
+          <Suspense fallback={null}>
+            <SearchFilterBar />
+          </Suspense>
 
           {/* ── Mod grid (streams in while shell above is already visible) ── */}
           <Suspense fallback={<ModsSkeleton />}>

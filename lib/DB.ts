@@ -103,7 +103,7 @@ async function _getModsPaginated(
 	// Only fetch fields the listing page actually needs
 	const projection = {
 		name: 1, author: 1, game: 1, mod_image: 1,
-		downloads_size: 1, date_added: 1, brand: 1, mod_type: 1,
+		downloads_size: 1, date_added: 1, brand: 1, mod_type: 1, slug: 1,
 	};
 
 	const skip = (page - 1) * perPage;
@@ -128,6 +128,32 @@ export const getModsPaginated = unstable_cache(
 	['mods-paginated'],
 	{ revalidate: 60 }
 );
+
+export async function getModBySlug(slug: string) {
+	await connectToDatabase();
+	const doc = await ModModel.findOne({ slug }).lean();
+	if (!doc) return null;
+	return {
+		...(doc as any),
+		_id: String((doc as any)._id),
+		date_added: (doc as any).date_added ? new Date((doc as any).date_added).toISOString() : null,
+		createdAt: (doc as any).createdAt ? new Date((doc as any).createdAt).toISOString() : null,
+		updatedAt: (doc as any).updatedAt ? new Date((doc as any).updatedAt).toISOString() : null,
+	};
+}
+
+export async function getModById(id: string) {
+	await connectToDatabase();
+	const doc = await ModModel.findById(id).lean();
+	if (!doc) return null;
+	return {
+		...(doc as any),
+		_id: String((doc as any)._id),
+		date_added: (doc as any).date_added ? new Date((doc as any).date_added).toISOString() : null,
+		createdAt: (doc as any).createdAt ? new Date((doc as any).createdAt).toISOString() : null,
+		updatedAt: (doc as any).updatedAt ? new Date((doc as any).updatedAt).toISOString() : null,
+	};
+}
 
 export async function getModByName(name: string) {
 	await connectToDatabase();

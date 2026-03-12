@@ -7,10 +7,11 @@ import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive,Copyrig
 import type { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
-import { getModByName, getRandomMods } from '@/lib/DB';
+import { getModByName, getModBySlug, getRandomMods } from '@/lib/DB';
 import RecommendedSlider from '@/app/components/RecommendedSlider';
 import ShinyText from '@/app/components/ShinyText';
 import { notFound } from 'next/navigation';
+import DownloadButton from '@/app/components/DownloadButton';
 
 type Props = {
   params: Promise<{ name: string }>;
@@ -18,7 +19,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { name } = await params;
-  const mod = await getModByName(decodeURIComponent(name));
+  const decoded = decodeURIComponent(name);
+  const mod = await getModBySlug(decoded) ?? await getModByName(decoded);
   return {
     title: mod ? `${mod.name} - Mods Haven` : 'Mod Not Found - Mods Haven',
     description: mod?.description || '',
@@ -28,7 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Home({ params }: Props) {
   const { name } = await params;
-  const mod = await getModByName(decodeURIComponent(name));
+  const decoded = decodeURIComponent(name);
+  const mod = await getModBySlug(decoded) ?? await getModByName(decoded);
   if (!mod) return notFound();
 
   // Combine mod_image + images array for the gallery
@@ -91,10 +94,7 @@ export default async function Home({ params }: Props) {
                 </div>
               </div>
               <div className="flex flex-col gap-2 px-1 sm:px-2">
-                <button className="flex items-center justify-center gap-1 px-4 cursor-pointer py-1.5 sm:py-2 rounded-[0.5rem] bg-[#ff6600] hover:bg-[#ff6600]/90 transition-colors w-fit">
-                  <Download className="w-4 h-4 sm:w-5 sm:h-5 stroke-3 text-white " />
-                  <p className="text-base sm:text-lg md:text-[1.5rem] font-[800]">Download</p>
-                </button>
+                <DownloadButton modId={mod._id} adLink={mod.AD_link} />
               </div>
             </div>
           </div>

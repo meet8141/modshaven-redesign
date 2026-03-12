@@ -210,7 +210,7 @@ async function ModsGrid({ searchParams }: { searchParams: Promise<{ page?: strin
               </div>
 
               <Link
-                href={`/mods/${encodeURIComponent(mod.name)}`}
+                href={`/mods/${mod.slug ?? encodeURIComponent(mod.name)}`}
                 className="border-2 border-[#ff6600] w-10 p-2 rounded-[50%] flex items-center justify-center hover:bg-[#362a1f] hover:text-white transition-colors"
                 title={`Go to ${mod.name}`}
               >

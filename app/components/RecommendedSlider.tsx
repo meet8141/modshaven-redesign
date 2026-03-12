@@ -16,6 +16,7 @@ import 'swiper/css';
 type Mod = {
   _id: string;
   name: string;
+  slug?: string;
   mod_image: string;
   game: string;
   mod_type?: string;
@@ -123,7 +124,7 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
               {/* Arrow link */}
               <div className="mt-auto px-1">
                 <Link
-                  href={`/mods/${encodeURIComponent(mod.name)}`}
+                  href={`/mods/${mod.slug ?? encodeURIComponent(mod.name)}`}
                   className="w-9 h-9 rounded-full border-2 border-[#ff6600] flex items-center justify-center text-[#ff6600] hover:bg-[#ff6600] hover:text-white transition-all duration-200"
                 >
                   <ArrowUpRight className="w-4 h-4" />

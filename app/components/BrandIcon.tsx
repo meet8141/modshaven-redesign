@@ -15,7 +15,7 @@ export default function BrandIcon({ brand, width = 25, height = 25 }: BrandIconP
 
   return (
     <img
-      src={`/icon/brands/${brand}.svg`}
+      src={`https://image.modshaven.com/Brand/${brand}.svg`}
       alt={brand}
       width={width}
       height={height}

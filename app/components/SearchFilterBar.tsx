@@ -155,7 +155,7 @@ export default function SearchFilterBar() {
           <button
             onClick={handleClear}
             className="flex items-center gap-2 px-5 py-3 rounded-[0.75rem]
-                       border-2 border-white/20 bg-transparent text-white/60 font-bold text-sm
+                       border-2 border-white/20 bg-black/40 backdrop-blur-lg text-white/60 font-bold text-sm
                        hover:border-white/50 hover:text-white transition-all duration-200"
           >
             <X className="w-4 h-4" />

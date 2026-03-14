@@ -161,10 +161,8 @@ async function ModsGrid({ searchParams }: { searchParams: Promise<{ page?: strin
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="object-cover rounded-[1rem]"
-                  unoptimized
-                  priority={index < 4}
-                  loading={index < 4 ? undefined : 'lazy'}
-                  fetchPriority={index < 4 ? 'high' : 'auto'}
+                  loading={'lazy'}
+                  fetchPriority={'high'}
                 />
               </div>
               <div className="flex flex-col gap-1 px-2">

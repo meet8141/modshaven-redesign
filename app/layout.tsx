@@ -43,6 +43,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="dns-prefetch" href="https://image.modshaven.com" />
+        <link rel="preconnect" href="https://image.modshaven.com" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${inter.variable} antialiased bg-black`}
       >

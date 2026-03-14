@@ -9,7 +9,7 @@ import BrandIcon from './BrandIcon';
 const MOD_TYPES = ['all', 'car', 'truck', 'maps'];
 
 const BRANDS = [
-  'all','Aston Martin','AUDI','BMW','Bugatti','Chevrolet','Dodge','Ferrari',
+  'all','Aston Martin','Audi','BMW','Bugatti','Chevrolet','Dodge','Ferrari',
   'Ford','Honda','Infiniti','Kia','Lamborghini','Land Rover','Lexus',
   'Lotus','Mazda','McLaren','Mercedes','Mitsubishi','Nissan','Pagani',
   'Peugeot','Porsche','Renault','Subaru','Toyota','Volkswagen','Volvo','Skoda',

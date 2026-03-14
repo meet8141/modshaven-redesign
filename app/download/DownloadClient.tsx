@@ -35,8 +35,8 @@ export default function DownloadClient({ mod }: { mod: Mod }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-black/50  backdrop-blur-lg border border-[#2a2a3e] rounded-[1.25rem] p-6 flex flex-col items-center gap-5 max-w-sm w-full text-white text-center shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center p-4 mt-15">
+      <div className="bg-black/50   backdrop-blur-lg border border-[#2a2a3e] rounded-[1.25rem] p-6 flex flex-col items-center gap-5 max-w-[100%]  sm:max-w-[35%] w-full text-white text-center shadow-2xl">
 
         {/* Title */}
         <div className="flex flex-col gap-1">
@@ -56,9 +56,9 @@ export default function DownloadClient({ mod }: { mod: Mod }) {
         )}
 
         {/* File info row */}
-        <div className="flex items-center gap-4 w-full bg-[#252540] rounded-[0.75rem] px-4 py-3">
-          <div className="bg-[#3a3a5c] p-2.5 rounded-[0.5rem] shrink-0">
-            <FileText className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-4 w-full bg-black/10 backdrop-blur-lg border-1  border-[#ff6600]  hover:cursor-pointer transition-all duration-200 rounded-[0.75rem] px-4 py-3">
+          <div className="bg-white/10 p-2.5 rounded-[0.5rem] shrink-0">
+            <FileText className="w-6 h-6 text-[#ff6600]" />
           </div>
           <div className="flex flex-col items-start">
             <p className="font-[800] text-sm sm:text-base">{mod.name}.zip</p>
@@ -69,17 +69,17 @@ export default function DownloadClient({ mod }: { mod: Mod }) {
         {/* Download button */}
         <button
           onClick={handleDownload}
-          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-[0.75rem] bg-[#1a7a3a] hover:bg-[#1a9a4a] transition-colors font-[800] text-base sm:text-lg w-full cursor-pointer"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-[0.75rem] bg-[#ff6600] hover:bg-[#ff5500] transition-colors font-[800] text-base sm:text-lg w-full cursor-pointer"
         >
           <Download className="w-5 h-5 stroke-[3]" />
-          Continue &amp; Download
+          Download
         </button>
 
         {/* Footer notes */}
-        <div className="flex flex-col gap-1 text-xs text-white/50 font-[600]">
+        <div className="flex flex-col gap-1 text-left p-1 text-sm text-white/50 font-[600]">
           <p>Ads support the platform. Thank you for your patience.</p>
           <p>You are on the secure download page.</p>
-          <p>If download didn&apos;t start Then click on download button again .</p>
+          <p>If download didn&apos;t start Then click on download button again.</p>
         </div>
 
       </div>

@@ -73,8 +73,9 @@
 
 
 :root {
-  --background: #f3f4f6;
-  --foreground: #1f2937;
+  --background: #1f1f1f;
+  --foreground: #f9fafb;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -82,13 +83,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1f1f1f;
-    --foreground: #f9fafb;
-  }
 }
 
 body {

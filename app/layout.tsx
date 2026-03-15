@@ -6,13 +6,6 @@ import { NavBar } from "./components/tubelight-navbar"
 import PixelBlast from '@/app/components/PixelBlast';
 import PageTransition from '@/app/components/PageTransition';
 
-const navItems = [
-    { name: 'Home', url: '/', icon: 'Home' },
-    { name: 'Mods', url: '/mods', icon: 'FolderGit' },
-    { name: 'Send', url: '/send', icon: 'Send' },
-    { name: 'About', url: '/about', icon: 'Info' },
-    { name: 'Contact', url: '/contact', icon: 'Mail' }
-  ];
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -50,7 +43,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased bg-black`}
       >
-        <NavBar items={navItems} />
+        <NavBar />
   <div style={{ width: '100%', height: '100%', position: 'fixed', top: 0, left: 0, zIndex: 0 }}>
        <PixelBlast
     variant="square"

@@ -1,21 +1,36 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home,   LayoutGrid,SendHorizontal,Info,FolderGit,Send,Mail, LucideIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { usePathname, useRouter } from "next/navigation"
+import {
+  Home,
+  Info,
+  FolderGit,
+  Send,
+  Mail,
 
+  Users,
+  LogOut,
+
+  Settings,
+  CloudUpload,
+  LucideIcon,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useUser } from "@/hooks/useUser"
 
 const iconMap: Record<string, LucideIcon> = {
   Home,
-  LayoutGrid,
-  SendHorizontal,
   Info,
   Send,
-   Mail,
-  FolderGit
+  Mail,
+  FolderGit,
+  CloudUpload,
+  Users,
+  LogOut,
+  Settings
+
 }
 
 interface NavItem {
@@ -25,26 +40,62 @@ interface NavItem {
 }
 
 interface NavBarProps {
-  items: NavItem[]
   className?: string
 }
 
-export function NavBar({ items, className }: NavBarProps) {
+const guestItems: NavItem[] = [
+  { name: "Home", url: "/", icon: "Home" },
+  { name: "Mods", url: "/mods", icon: "FolderGit" },
+  { name: "Send", url: "/send", icon: "Send" },
+  { name: "About", url: "/about", icon: "Info" },
+  { name: "Contact", url: "/contact", icon: "Mail" },
+]
+
+const userItems: NavItem[] = [
+  { name: "Home", url: "/", icon: "Home" },
+  { name: "Mods", url: "/mods", icon: "FolderGit" },
+  { name: "About", url: "/about", icon: "Info" },
+  { name: "Logout", url: "/user/logout", icon: "LogOut" },
+]
+
+const moderatorItems: NavItem[] = [
+  { name: "Home", url: "/", icon: "Home" },
+  { name: "Mods", url: "/mods", icon: "FolderGit" },
+  { name: "Add Mod", url: "/mods/AddMod", icon: "CloudUpload" },
+  { name: "User Management", url: "/user-management", icon: "Users" },
+  { name: "Logout", url: "/user/logout", icon: "LogOut" },
+]
+
+const adminItems: NavItem[] = [
+  { name: "Home", url: "/", icon: "Home" },
+  { name: "Mods", url: "/mods", icon: "FolderGit" },
+  { name: "Add Mod", url: "/mods/AddMod", icon: "CloudUpload" },
+  { name: "Admin", url: "/admin", icon: "Settings" },
+  { name: "Logout", url: "/user/logout", icon: "LogOut" },
+]
+
+export function NavBar({ className }: NavBarProps) {
   const pathname = usePathname()
-  const [isMobile, setIsMobile] = useState(false)
+  const router = useRouter()
+  const { user } = useUser()
 
-  // Find active item based on current pathname
-  const activeItem = items.find(item => item.url === pathname) || items[0]
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
+  async function handleLogout() {
+    try {
+      await fetch("/api/auth/logout", { method: "GET", cache: "no-store" })
+    } finally {
+      router.push("/user/login")
+      router.refresh()
     }
+  }
 
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  const items =
+    user?.role === "ADMIN"
+      ? adminItems
+      : user?.role === "MODERATOR"
+        ? moderatorItems
+        : user?.role === "USER"
+          ? userItems
+          : guestItems
 
   return (
     <div
@@ -57,6 +108,21 @@ export function NavBar({ items, className }: NavBarProps) {
         {items.map((item) => {
           const Icon = iconMap[item.icon] || Home
           const isActive = item.url === pathname
+
+          if (item.name === "Logout") {
+            return (
+              <button
+                key={item.name}
+                type="button"
+                onClick={handleLogout}
+                className="relative cursor-pointer text-sm font-black px-4.5 sm:px-6 py-2.5 rounded-full transition-all duration-200 text-[#fff] hover:text-[#f44b00]"
+              >
+                <span className="relative z-10">
+                  <Icon size={20} strokeWidth={2.5} />
+                </span>
+              </button>
+            )
+          }
 
           return (
             <Link

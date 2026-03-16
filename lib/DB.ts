@@ -41,6 +41,8 @@ const modSchema = new mongoose.Schema(
 		slug: { type: String },
 		tags: [{ type: String }],
 		Virustotal_link: { type: String },
+		uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+		updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
 	},
 	{ timestamps: true }
 );
@@ -56,19 +58,25 @@ modSchema.index({ name: 1, author: 1 }); // for regex search
 
 const ModModel = mongoose.models.Mod || mongoose.model('Mod', modSchema);
 
+function serializeModDoc(doc: any) {
+	return {
+		...doc,
+		_id: String(doc._id),
+		uploadedBy: doc.uploadedBy ? String(doc.uploadedBy) : null,
+		updatedBy: doc.updatedBy ? String(doc.updatedBy) : null,
+		date_added: doc.date_added ? new Date(doc.date_added).toISOString() : null,
+		createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
+		updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : null,
+	};
+}
+
 // ── DB helpers ──
 
 export async function getAllMods() {
 	await connectToDatabase();
 	const docs = await ModModel.find().sort({ date_added: -1 }).lean();
 	// Serialize Mongoose documents to plain objects
-	return docs.map((doc: any) => ({
-		...doc,
-		_id: String(doc._id),
-		date_added: doc.date_added ? new Date(doc.date_added).toISOString() : null,
-		createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
-		updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : null,
-	}));
+	return docs.map(serializeModDoc);
 }
 
 async function _getModsPaginated(
@@ -111,13 +119,7 @@ async function _getModsPaginated(
 		ModModel.find(query, projection).sort(sortQuery).skip(skip).limit(perPage).lean(),
 		ModModel.countDocuments(query),
 	]);
-	const mods = docs.map((doc: any) => ({
-		...doc,
-		_id: String(doc._id),
-		date_added: doc.date_added ? new Date(doc.date_added).toISOString() : null,
-		createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
-		updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : null,
-	}));
+	const mods = docs.map(serializeModDoc);
 	return { mods, totalCount, totalPages: Math.ceil(totalCount / perPage), currentPage: page };
 }
 
@@ -133,39 +135,21 @@ export async function getModBySlug(slug: string) {
 	await connectToDatabase();
 	const doc = await ModModel.findOne({ slug }).lean();
 	if (!doc) return null;
-	return {
-		...(doc as any),
-		_id: String((doc as any)._id),
-		date_added: (doc as any).date_added ? new Date((doc as any).date_added).toISOString() : null,
-		createdAt: (doc as any).createdAt ? new Date((doc as any).createdAt).toISOString() : null,
-		updatedAt: (doc as any).updatedAt ? new Date((doc as any).updatedAt).toISOString() : null,
-	};
+	return serializeModDoc(doc);
 }
 
 export async function getModById(id: string) {
 	await connectToDatabase();
 	const doc = await ModModel.findById(id).lean();
 	if (!doc) return null;
-	return {
-		...(doc as any),
-		_id: String((doc as any)._id),
-		date_added: (doc as any).date_added ? new Date((doc as any).date_added).toISOString() : null,
-		createdAt: (doc as any).createdAt ? new Date((doc as any).createdAt).toISOString() : null,
-		updatedAt: (doc as any).updatedAt ? new Date((doc as any).updatedAt).toISOString() : null,
-	};
+	return serializeModDoc(doc);
 }
 
 export async function getModByName(name: string) {
 	await connectToDatabase();
 	const doc = await ModModel.findOne({ name }).lean();
 	if (!doc) return null;
-	return {
-		...(doc as any),
-		_id: String((doc as any)._id),
-		date_added: (doc as any).date_added ? new Date((doc as any).date_added).toISOString() : null,
-		createdAt: (doc as any).createdAt ? new Date((doc as any).createdAt).toISOString() : null,
-		updatedAt: (doc as any).updatedAt ? new Date((doc as any).updatedAt).toISOString() : null,
-	};
+	return serializeModDoc(doc);
 }
 
 export async function getRandomMods(excludeName: string, limit: number = 8) {
@@ -174,11 +158,5 @@ export async function getRandomMods(excludeName: string, limit: number = 8) {
 		{ $match: { name: { $ne: excludeName } } },
 		{ $sample: { size: limit } },
 	]);
-	return docs.map((doc: any) => ({
-		...doc,
-		_id: String(doc._id),
-		date_added: doc.date_added ? new Date(doc.date_added).toISOString() : null,
-		createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
-		updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : null,
-	}));
+	return docs.map(serializeModDoc);
 }

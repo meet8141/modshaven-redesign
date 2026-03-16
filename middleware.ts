@@ -4,9 +4,9 @@ import { validateToken } from "@/lib/jwt";
 const COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? "token";
 
 const AUTH_ONLY_PATHS = ["/user/login", "/user/signup"];
-const PROTECTED_PATHS = ["/admin", "/mods/AddMod", "/user-management"];
+const PROTECTED_PATHS = ["/admin", "/mods/AddMod", "/user-management", "/api/mods", "/api/upload/file"];
 const ADMIN_PATHS = ["/admin"];
-const MOD_PATHS = ["/mods/AddMod", "/user-management"];
+const MOD_PATHS = ["/mods/AddMod", "/user-management", "/api/mods", "/api/upload/file"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -29,6 +29,9 @@ export async function middleware(req: NextRequest) {
   }
 
   if (PROTECTED_PATHS.some((path) => pathname.startsWith(path)) && !user) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/user/login", req.url));
   }
 

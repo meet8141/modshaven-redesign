@@ -31,3 +31,7 @@ export async function requireRole(...roles: Array<"USER" | "MODERATOR" | "ADMIN"
   }
   return user;
 }
+
+export async function requireAdminOrModerator(): Promise<UserPayload> {
+  return requireRole("ADMIN", "MODERATOR");
+}

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { fullName?: unknown; password?: unknown };
+  let body: { fullName?: unknown; email?: unknown; identifier?: unknown; password?: unknown };
 
   try {
     body = await req.json();
@@ -25,12 +25,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { fullName, password } = body;
+  const { fullName, email, identifier, password } = body;
+  const rawIdentifier =
+    typeof identifier === "string"
+      ? identifier
+      : typeof fullName === "string"
+        ? fullName
+        : typeof email === "string"
+          ? email
+          : "";
 
   if (
-    !fullName ||
+    !rawIdentifier ||
     !password ||
-    typeof fullName !== "string" ||
     typeof password !== "string"
   ) {
     return NextResponse.json(
@@ -39,11 +46,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const sanitizedFullName = fullName.trim().replace(/\0/g, "");
+  const sanitizedIdentifier = rawIdentifier.trim().replace(/\0/g, "");
 
   try {
     await connectToDatabase();
-    const token = await User.matchPasswordAndGenerateToken(sanitizedFullName, password);
+    const token = await User.matchPasswordAndGenerateToken(sanitizedIdentifier, password);
 
     const response = NextResponse.json({ success: true }, { status: 200 });
     response.cookies.set(COOKIE_NAME, token, {

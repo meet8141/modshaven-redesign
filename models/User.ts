@@ -21,7 +21,11 @@ export interface IUser extends Document {
 }
 
 interface IUserModel extends Model<IUser> {
-  matchPasswordAndGenerateToken(fullName: string, password: string): Promise<string>;
+  matchPasswordAndGenerateToken(identifier: string, password: string): Promise<string>;
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 const userSchema = new Schema<IUser>(
@@ -67,8 +71,16 @@ userSchema.pre("save", function () {
 
 userSchema.static(
   "matchPasswordAndGenerateToken",
-  async function (fullName: string, password: string): Promise<string> {
-    const user = await this.findOne({ fullName }).select(
+  async function (identifier: string, password: string): Promise<string> {
+    const normalized = identifier.trim();
+    const fullNameRegex = new RegExp(`^${escapeRegex(normalized)}$`, "i");
+
+    const user = await this.findOne({
+      $or: [
+        { fullName: fullNameRegex },
+        { email: normalized.toLowerCase() },
+      ],
+    }).select(
       "salt password role email profileImageURL _id"
     );
 

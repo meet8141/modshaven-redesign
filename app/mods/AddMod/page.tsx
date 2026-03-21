@@ -49,6 +49,8 @@ const sectionClass = "rounded-[0.95rem] border border-white/10 bg-black/25 p-4 m
 export default function AddModPage() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
+  const processingProgressTimerRef = useRef<number | null>(null);
+  const uploadStartedAtRef = useRef<number | null>(null);
   const [openDropdown, setOpenDropdown] = useState<"game" | "brand" | "modType" | null>(null);
 
   const [uploadMode, setUploadMode] = useState<UploadMode>("link");
@@ -62,6 +64,13 @@ export default function AddModPage() {
   const [downloadLink, setDownloadLink] = useState("");
   const [virusTotalLink, setVirusTotalLink] = useState("");
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [isDragOverUpload, setIsDragOverUpload] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadSpeedMbps, setUploadSpeedMbps] = useState(0);
+  const [uploadEtaSeconds, setUploadEtaSeconds] = useState<number | null>(null);
+  const [uploadElapsedSeconds, setUploadElapsedSeconds] = useState(0);
+  const [uploadTimeTakenSeconds, setUploadTimeTakenSeconds] = useState<number | null>(null);
+  const [uploadStage, setUploadStage] = useState<"idle" | "uploading" | "processing" | "completed">("idle");
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -80,8 +89,42 @@ export default function AddModPage() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (processingProgressTimerRef.current !== null) {
+        window.clearInterval(processingProgressTimerRef.current);
+      }
+    };
   }, []);
+
+  function clearProcessingProgressTimer() {
+    if (processingProgressTimerRef.current !== null) {
+      window.clearInterval(processingProgressTimerRef.current);
+      processingProgressTimerRef.current = null;
+    }
+  }
+
+  function startProcessingProgressAnimation() {
+    clearProcessingProgressTimer();
+    setUploadStage("processing");
+    setUploadEtaSeconds(null);
+
+    processingProgressTimerRef.current = window.setInterval(() => {
+      if (uploadStartedAtRef.current !== null) {
+        const elapsed = (performance.now() - uploadStartedAtRef.current) / 1000;
+        setUploadElapsedSeconds(elapsed);
+      }
+
+      setUploadProgress((current) => {
+        if (current >= 98) return current;
+
+        // Move gradually toward 98 while server finalizes upload.
+        const remaining = 98 - current;
+        const step = Math.max(0.25, remaining * 0.08);
+        return Math.min(98, current + step);
+      });
+    }, 250);
+  }
 
   function formatBytes(bytes: number) {
     if (!Number.isFinite(bytes) || bytes <= 0) return "";
@@ -93,6 +136,15 @@ export default function AddModPage() {
 
   function exceedsImageLimit(file: File) {
     return file.size > MAX_IMAGE_BYTES;
+  }
+
+  function formatDuration(seconds: number) {
+    if (!Number.isFinite(seconds) || seconds < 0) return "0s";
+    const whole = Math.round(seconds);
+    const mins = Math.floor(whole / 60);
+    const secs = whole % 60;
+    if (mins <= 0) return `${secs}s`;
+    return `${mins}m ${secs}s`;
   }
 
   async function uploadImageWithPresignedUrl(file: File) {
@@ -142,26 +194,87 @@ export default function AddModPage() {
 
   async function handleUploadFile(file: File) {
     setIsUploadingFile(true);
+    setUploadProgress(0);
+    setUploadSpeedMbps(0);
+    setUploadEtaSeconds(null);
+    setUploadElapsedSeconds(0);
+    setUploadTimeTakenSeconds(null);
+    setUploadStage("uploading");
+    clearProcessingProgressTimer();
     setError("");
 
     try {
+      uploadStartedAtRef.current = performance.now();
       const fd = new FormData();
       fd.append("file", file);
 
-      const res = await fetch("/api/upload/file", {
-        method: "POST",
-        body: fd,
-      });
-
-      const data = (await res.json()) as {
+      const data = await new Promise<{
         success?: boolean;
         message?: string;
         url?: string;
         size?: number;
         virusTotalScan?: { permalink?: string };
-      };
+      }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/upload/file");
 
-      if (!res.ok || !data.success || !data.url) {
+        xhr.upload.onprogress = (event) => {
+          if (!event.lengthComputable) return;
+
+          const percent = (event.loaded / event.total) * 100;
+
+          // Stage 1 progress (browser -> server) occupies 0-75%.
+          const stagedPercent = Math.min(75, percent * 0.75);
+          setUploadProgress(stagedPercent);
+
+          const elapsedSeconds = Math.max(
+            (performance.now() - (uploadStartedAtRef.current ?? performance.now())) / 1000,
+            0.001
+          );
+          setUploadElapsedSeconds(elapsedSeconds);
+
+          const bitsPerSecond = (event.loaded * 8) / elapsedSeconds;
+          setUploadSpeedMbps(bitsPerSecond / 1_000_000);
+
+          const bytesPerSecond = event.loaded / elapsedSeconds;
+          const remainingBytes = Math.max(0, event.total - event.loaded);
+          const etaSeconds = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : null;
+          setUploadEtaSeconds(etaSeconds);
+
+          if (event.loaded >= event.total) {
+            // Request body is sent; server is still processing/uploading to storage.
+            setUploadProgress((current) => Math.max(current, 76));
+            startProcessingProgressAnimation();
+          }
+        };
+
+        xhr.onload = () => {
+          try {
+            const parsed = JSON.parse(xhr.responseText || "{}");
+            if (xhr.status >= 200 && xhr.status < 300) {
+              clearProcessingProgressTimer();
+              setUploadStage("completed");
+              setUploadProgress(100);
+              setUploadEtaSeconds(0);
+              if (uploadStartedAtRef.current !== null) {
+                const totalSeconds = (performance.now() - uploadStartedAtRef.current) / 1000;
+                setUploadElapsedSeconds(totalSeconds);
+                setUploadTimeTakenSeconds(totalSeconds);
+              }
+              resolve(parsed);
+              return;
+            }
+            reject(new Error(parsed?.message ?? "File upload failed"));
+          } catch {
+            reject(new Error("Unexpected upload response"));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Failed to upload file"));
+        xhr.send(fd);
+      });
+
+      if (!data.success || !data.url) {
         setError(data.message ?? "File upload failed");
         return;
       }
@@ -173,9 +286,18 @@ export default function AddModPage() {
       }
       setSuccess("File uploaded successfully. You can submit the mod now.");
     } catch {
+      clearProcessingProgressTimer();
       setError("Failed to upload file.");
+      setUploadStage("idle");
+      setUploadProgress(0);
+      setUploadSpeedMbps(0);
+      setUploadEtaSeconds(null);
+      setUploadElapsedSeconds(0);
+      setUploadTimeTakenSeconds(null);
     } finally {
+      clearProcessingProgressTimer();
       setIsUploadingFile(false);
+      uploadStartedAtRef.current = null;
     }
   }
 
@@ -607,14 +729,38 @@ export default function AddModPage() {
             <div className="flex flex-col gap-3">
               <label className="flex flex-col gap-2">
                 <span className={`${labelClass} flex items-center gap-1.5`}><UploadCloud className="w-3.5 h-3.5" />Upload Mod File</span>
-                <div className="w-full rounded-[0.95rem] border border-white/10 bg-black/20 px-3 py-3 flex items-center gap-3">
+                <div
+                  className={`w-full rounded-[0.95rem] border px-3 py-3 flex items-center gap-3 h-50 transition-colors ${
+                    isDragOverUpload
+                      ? "border-[#ff6600] bg-[#ff6600]/10"
+                      : "border-white/10 bg-black/20"
+                  }`}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    setIsDragOverUpload(true);
+                  }}
+                  onDragLeave={(event) => {
+                    event.preventDefault();
+                    setIsDragOverUpload(false);
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    setIsDragOverUpload(false);
+                    const file = event.dataTransfer.files?.[0];
+                    if (!file) return;
+                    setError("");
+                    setUploadFileName(file.name);
+                    void handleUploadFile(file);
+                  }}
+                >
                   <label
                     htmlFor="upload-mod-file"
-                    className="shrink-0 cursor-pointer rounded-[0.85rem] border-2 border-[#ff6600] px-5 py-2 text-[1.05rem] font-[900] text-[#ff6600] transition-all hover:bg-[#ff6600] hover:text-white"
+                    className="shrink-0 cursor-pointer  rounded-[0.85rem] border-2 border-[#ff6600] px-5 py-2 text-[1.05rem] font-[900] text-[#ff6600] transition-all hover:bg-[#ff6600] hover:text-white"
                   >
                     Choose File
                   </label>
                   <span className="truncate text-white text-[0.95rem] font-[700]">{uploadFileName}</span>
+                  <span className="ml-auto text-[0.8rem] text-white/55 font-[700] hidden sm:inline">Drag & drop file here</span>
                   <input
                     id="upload-mod-file"
                     type="file"
@@ -630,6 +776,47 @@ export default function AddModPage() {
                   />
                 </div>
               </label>
+
+              {(isUploadingFile || uploadProgress > 0) ? (
+                <div className="rounded-[0.85rem] border border-white/10 bg-black/25 px-3 py-3">
+                  <div className="flex items-center justify-between text-xs font-[700] text-white/70 mb-2">
+                    <span>
+                      {uploadStage === "uploading"
+                        ? "Uploading to server..."
+                        : uploadStage === "processing"
+                          ? "Processing on server..."
+                          : uploadStage === "completed"
+                            ? "Upload complete"
+                            : "Upload status"}
+                    </span>
+                    <span>{Math.min(100, Math.round(uploadProgress))}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full bg-[#ff6600] transition-all duration-150"
+                      style={{ width: `${Math.min(100, Math.max(0, uploadProgress))}%` }}
+                    />
+                  </div>
+                  <div className="mt-2 text-xs text-[#ffd0ae] font-[700]">
+                    {uploadStage === "processing"
+                      ? "Upload sent. Waiting for server processing..."
+                      : `Upload speed: ${uploadSpeedMbps > 0 ? `${uploadSpeedMbps.toFixed(2)} Mbps` : "Calculating..."}`}
+                  </div>
+                  <div className="mt-1 text-xs text-[#ffd0ae] font-[700] flex flex-wrap gap-x-4 gap-y-1">
+                    <span>Elapsed: {formatDuration(uploadElapsedSeconds)}</span>
+                    <span>
+                      ETA: {uploadStage === "uploading"
+                        ? uploadEtaSeconds !== null
+                          ? formatDuration(uploadEtaSeconds)
+                          : "Calculating..."
+                        : "--"}
+                    </span>
+                    {uploadStage === "completed" && uploadTimeTakenSeconds !== null ? (
+                      <span>Time taken: {formatDuration(uploadTimeTakenSeconds)}</span>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
 
               <input type="hidden" name="Download_link" value={downloadLink} readOnly />
               <input type="hidden" name="Virustotal_link" value={virusTotalLink} readOnly />

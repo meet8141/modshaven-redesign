@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
           fullName: created.fullName,
           email: created.email,
           role: created.role,
+          password: created.password,
           profileImageURL: created.profileImageURL,
         },
       },

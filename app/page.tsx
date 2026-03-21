@@ -4,6 +4,7 @@
 import Image from "next/image";
 import SplitText from "./components/SplitText";
 import DecryptedText from './components/DecryptedText';
+import DiscordCommunityCounts from "../components/DiscordCommunityCounts";
 
 import { FolderSearch, Download, Gamepad } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -13,6 +14,7 @@ import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
+
   return (
     <>
       
@@ -65,7 +67,7 @@ export default function Home() {
           </button>
           <button
             className="mt-10 px-4 py-2 bg-transparent backdrop-blur-lg  border-2 border-[#ff6600] text-[#fff] font-bold rounded-[0.75rem] hover:bg-[#ff660010] hover:text-[#ff6600] transition-colors duration-300"
-            onClick={() => router.push('/resources/about')}
+            onClick={() => router.push('/about')}
           >
             About
           </button>
@@ -111,18 +113,22 @@ export default function Home() {
               members.
             </p>
             <div className="mt-4 font-[700]  flex items-center space-x-2">
-              <span className="flex gap-4"><span className="flex"><span className=" fixed text-green-400 animate-ping scale-125">● </span><span className=" fixed text-green-400 scale-125">● </span></span> 2,460 online</span>
-              <span> ● 22,156 members</span>
+              <DiscordCommunityCounts />
             </div>
-            <button className="mt-6 px-6 py-3 bg-[#5865f2] rounded-[0.75rem] font-semibold hover:bg-[#4752c4] transition">
-              JOIN DISCORD
+            <button className="mt-6 px-6 py-3 bg-[#5865f2] rounded-[0.75rem] font-semibold hover:bg-[#4752c4] transition cursor-pointer">
+              <a href="https://discord.com/invite/7zPyFdYK" target="_blank" rel="noopener noreferrer">
+                JOIN DISCORD
+              </a>
             </button>
           </div>
           <div className="mt-8 md:mt-0">
-            <img
+            <Image
               src="https://image.modshaven.com/mods/Join%20Now%20To%20Access%20High%20Quality%20Mods!.webp"
               alt="Community cars"
-              className="rounded-lg shadow-lg w-full max-w-sm"
+              width={640}
+              height={400}
+              sizes="(max-width: 768px) 100vw, 384px"
+              className="rounded-lg shadow-lg w-full max-w-sm h-auto"
             />
           </div>
         </div>

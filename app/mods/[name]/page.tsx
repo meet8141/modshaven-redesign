@@ -12,6 +12,7 @@ import RecommendedSlider from '@/app/components/RecommendedSlider';
 import ShinyText from '@/app/components/ShinyText';
 import { notFound } from 'next/navigation';
 import DownloadButton from '@/app/components/DownloadButton';
+import DiscordCommunityCounts from '@/components/DiscordCommunityCounts';
 
 type Props = {
   params: Promise<{ name: string }>;
@@ -111,15 +112,19 @@ export default async function Home({ params }: Props) {
                         members.
                       </p>
                       <div className="mt-4 font-[700]  flex items-center space-x-2">
-                        <span className="flex gap-4"><span className="flex"><span className=" fixed text-green-400 animate-ping scale-125">● </span><span className=" fixed text-green-400 scale-125">● </span></span> 2,460 online</span>
-                        <span> ● 22,156 members</span>
+                        <DiscordCommunityCounts />
                       </div>
                       <button className="mt-6 px-6 py-3 bg-[#5865f2] rounded-[0.75rem] font-semibold hover:bg-[#4752c4] transition">
-                        JOIN DISCORD
+                          <a href="https://discord.com/invite/7zPyFdYK" target="_blank" rel="noopener noreferrer">
+                JOIN DISCORD
+              </a>
                       </button>
                     </div>
                     <div className="mt-8 md:mt-0">
-                      <img
+                      <Image
+                          width={640}
+              height={400}
+              sizes="(max-width: 768px) 100vw, 384px"
                         src="https://image.modshaven.com/mods/Join%20Now%20To%20Access%20High%20Quality%20Mods!.webp"
                         alt="Community cars"
                         className="rounded-lg shadow-lg w-full max-w-sm"

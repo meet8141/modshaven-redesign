@@ -167,6 +167,45 @@ export default function AdminDashboardClient() {
     }
   };
 
+  const handleSaveUser = async () => {
+    if (!selectedUser) return;
+
+    try {
+      setSaving(true);
+      setSaveError(null);
+
+      const payload: Record<string, string> = {
+        fullName: String((editFormData as any)?.fullName || ''),
+        email: String((editFormData as any)?.email || ''),
+        role: String((editFormData as any)?.role || ''),
+      };
+
+      const password = String((editFormData as any)?.password || '').trim();
+      if (password) {
+        payload.password = password;
+      }
+
+      const response = await fetch(`/api/admin/user/${selectedUser._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to update user');
+      }
+
+      setModalType(null);
+      setSelectedUser(null);
+      await fetchDashboard();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleDeleteMod = async () => {
     if (!selectedMod) return;
 
@@ -694,6 +733,21 @@ export default function AdminDashboardClient() {
                 />
               </div>
 
+              <div>
+                <label className={labelClass}>New Password</label>
+                <input
+                  type="password"
+                  value={(editFormData as any)?.password || ''}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, password: e.target.value })
+                  }
+                  placeholder="Leave blank to keep current password"
+                  className={inputClass}
+                />
+                <p className="text-white/50 text-xs mt-1 font-[600]">Minimum 6 characters when set.</p>
+              </div>
+              
+
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   onClick={() => setModalType(null)}
@@ -702,7 +756,7 @@ export default function AdminDashboardClient() {
                   Cancel
                 </button>
                 <button
-                  onClick={handleSaveMod}
+                  onClick={handleSaveUser}
                   disabled={saving}
                   className="px-5 py-2.5 bg-[#ff6600] hover:bg-[#ff7722] disabled:opacity-50 border-2 border-[#ff6600] hover:border-[#ff7722] rounded-[0.75rem] text-white font-[700] transition-all flex items-center gap-2"
                 >

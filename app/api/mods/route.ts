@@ -26,6 +26,15 @@ function sanitizeString(value: string) {
   return value.trim().replace(/\0/g, "");
 }
 
+function isValidHttpUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 async function buildUniqueSlug(ModModel: mongoose.Model<any>, baseName: string): Promise<string> {
   const base = slugify(baseName, { lower: true, strict: true, trim: true }) || "mod";
   let candidate = base;
@@ -62,13 +71,23 @@ export async function POST(req: NextRequest) {
       AD_link: sanitizeString(String(formData.get("AD_link") ?? "https://sawutser.top/4/9283523")),
     });
 
+    const primaryImageUrlInput = sanitizeString(String(formData.get("mod_image_url") ?? ""));
     const primaryImage = formData.get("mod_image");
-    if (!(primaryImage instanceof File) || primaryImage.size <= 0) {
-      return NextResponse.json({ error: "Primary mod image is required" }, { status: 400 });
-    }
 
-    validateImageFile(primaryImage, true);
-    const modImageUrl = await uploadImageToR2(primaryImage, "mods");
+    let modImageUrl = primaryImageUrlInput;
+
+    if (modImageUrl) {
+      if (!isValidHttpUrl(modImageUrl)) {
+        return NextResponse.json({ error: "Primary image URL is invalid" }, { status: 400 });
+      }
+    } else {
+      if (!(primaryImage instanceof File) || primaryImage.size <= 0) {
+        return NextResponse.json({ error: "Primary mod image is required" }, { status: 400 });
+      }
+
+      validateImageFile(primaryImage, true);
+      modImageUrl = await uploadImageToR2(primaryImage, "mods");
+    }
 
     const galleryFiles = formData
       .getAll("images")
@@ -80,7 +99,8 @@ export async function POST(req: NextRequest) {
     const urlImages = formData
       .getAll("images_urls[]")
       .map((value) => sanitizeString(String(value)))
-      .filter(Boolean);
+      .filter(Boolean)
+      .filter((value) => isValidHttpUrl(value));
 
     // Keep primary image as first gallery item, then append chosen gallery/url images.
     const uniqueImages = Array.from(new Set([modImageUrl, ...galleryUrls, ...urlImages]));

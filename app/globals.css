@@ -73,7 +73,7 @@
 
 
 :root {
-  --background: #1f1f1f;
+  --background: #1f1f1f00;
   --foreground: #f9fafb;
   color-scheme: dark;
 }
@@ -86,7 +86,7 @@
 }
 
 body {
-  background: var(--background);
+  background:transparent ;
   color: var(--foreground);
 }
 

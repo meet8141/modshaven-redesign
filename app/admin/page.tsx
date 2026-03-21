@@ -1,7 +1,13 @@
-// Route: /admin (GET)
-// Admin dashboard page
+import { redirect } from 'next/navigation';
+import { requireRole } from '@/lib/auth';
+import AdminDashboardClient from './AdminDashboardClient';
 
-export default function AdminDashboard() {
-  // Placeholder for admin dashboard UI
-  return <div>Admin Dashboard (UI to be implemented)</div>;
+export default async function AdminPage() {
+  try {
+    await requireRole('ADMIN');
+  } catch {
+    redirect('/user/login');
+  }
+
+  return <AdminDashboardClient />;
 }

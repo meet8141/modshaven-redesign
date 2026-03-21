@@ -57,9 +57,12 @@ export default function AddModPage() {
   const [modType, setModType] = useState("car");
   const [downloadSize, setDownloadSize] = useState("");
   const [urlImages, setUrlImages] = useState<string[]>([""]);
+  const [primaryImageUrl, setPrimaryImageUrl] = useState("");
+  const [galleryImageUrls, setGalleryImageUrls] = useState<string[]>([]);
   const [downloadLink, setDownloadLink] = useState("");
   const [virusTotalLink, setVirusTotalLink] = useState("");
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -90,6 +93,51 @@ export default function AddModPage() {
 
   function exceedsImageLimit(file: File) {
     return file.size > MAX_IMAGE_BYTES;
+  }
+
+  async function uploadImageWithPresignedUrl(file: File) {
+    try {
+      const presignRes = await fetch("/api/upload/image/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type || "application/octet-stream",
+          fileSize: file.size,
+          folder: "mods",
+        }),
+      });
+
+      const presignData = (await presignRes.json()) as {
+        error?: string;
+        uploadUrl?: string;
+        publicUrl?: string;
+      };
+
+      if (!presignRes.ok || !presignData.uploadUrl || !presignData.publicUrl) {
+        throw new Error(presignData.error ?? "Failed to prepare image upload");
+      }
+
+      const putRes = await fetch(presignData.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      });
+
+      if (!putRes.ok) {
+        throw new Error("Image upload failed");
+      }
+
+      return presignData.publicUrl;
+    } catch (error: unknown) {
+      // Browsers typically surface CORS/blocked cross-origin PUT as a generic "Failed to fetch" error.
+      if (error instanceof TypeError) {
+        throw new Error(
+          "Direct image upload is blocked (likely R2 CORS). Falling back to server upload on submit."
+        );
+      }
+      throw error;
+    }
   }
 
   async function handleUploadFile(file: File) {
@@ -139,6 +187,19 @@ export default function AddModPage() {
 
     const form = event.currentTarget;
     const fd = new FormData(form);
+    const primaryFile = fd.get("mod_image");
+    const hasPrimaryFile = primaryFile instanceof File && primaryFile.size > 0;
+
+    if (!primaryImageUrl && !hasPrimaryFile) {
+      setError("Please upload or select a primary image before submitting.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (primaryImageUrl) {
+      fd.set("mod_image_url", primaryImageUrl);
+      fd.delete("mod_image");
+    }
 
     if (uploadMode === "file") {
       if (!downloadLink) {
@@ -154,6 +215,11 @@ export default function AddModPage() {
       .map((value) => value.trim())
       .filter(Boolean)
       .forEach((value) => fd.append("images_urls[]", value));
+
+    galleryImageUrls.forEach((value) => fd.append("images_urls[]", value));
+    if (galleryImageUrls.length > 0) {
+      fd.delete("images");
+    }
 
     try {
       const res = await fetch("/api/mods", {
@@ -176,6 +242,8 @@ export default function AddModPage() {
       setDownloadSize("");
       setOpenDropdown(null);
       setUrlImages([""]);
+      setPrimaryImageUrl("");
+      setGalleryImageUrls([]);
       setDownloadLink("");
       setVirusTotalLink("");
       setPrimaryFileName("No file chosen");
@@ -406,19 +474,40 @@ export default function AddModPage() {
                 accept="image/*"
                 required
                 className="sr-only"
-                onChange={(event) => {
+                onChange={async (event) => {
                   const file = event.target.files?.[0];
-                  if (file && exceedsImageLimit(file)) {
+                  if (!file) {
+                    setPrimaryFileName("No file chosen");
+                    setPrimaryImageUrl("");
+                    return;
+                  }
+
+                  if (exceedsImageLimit(file)) {
                     setError(`Images larger than ${MAX_IMAGE_MB}MB are not allowed.`);
                     setPrimaryFileName("No file chosen");
                     event.currentTarget.value = "";
                     return;
                   }
+
                   setError("");
-                  setPrimaryFileName(file?.name ?? "No file chosen");
+                  setPrimaryFileName(file.name);
+
+                  try {
+                    setIsUploadingImages(true);
+                    const uploadedUrl = await uploadImageWithPresignedUrl(file);
+                    setPrimaryImageUrl(uploadedUrl);
+                    setSuccess("Primary image uploaded.");
+                  } catch (uploadError: unknown) {
+                    setPrimaryImageUrl("");
+                    setError(uploadError instanceof Error ? uploadError.message : "Failed to upload primary image.");
+                    setSuccess("Primary image will upload via server on submit.");
+                  } finally {
+                    setIsUploadingImages(false);
+                  }
                 }}
               />
             </div>
+            {primaryImageUrl ? <p className="text-xs text-[#8fe28f] break-all">Uploaded: {primaryImageUrl}</p> : null}
           </label>
 
           <label className="flex flex-col gap-2">
@@ -438,7 +527,7 @@ export default function AddModPage() {
                 accept="image/*"
                 multiple
                 className="sr-only"
-                onChange={(event) => {
+                onChange={async (event) => {
                   const files = Array.from(event.target.files ?? []);
                   const count = files.length;
                   if (files.some(exceedsImageLimit)) {
@@ -450,16 +539,33 @@ export default function AddModPage() {
                   setError("");
                   if (count === 0) {
                     setGalleryFileName("No file chosen");
+                    setGalleryImageUrls([]);
                     return;
                   }
                   if (count === 1) {
                     setGalleryFileName(event.target.files?.[0]?.name ?? "No file chosen");
-                    return;
+                  } else {
+                    setGalleryFileName(`${count} files selected`);
                   }
-                  setGalleryFileName(`${count} files selected`);
+
+                  try {
+                    setIsUploadingImages(true);
+                    const uploadedUrls = await Promise.all(files.map((file) => uploadImageWithPresignedUrl(file)));
+                    setGalleryImageUrls(uploadedUrls);
+                    setSuccess(`Uploaded ${uploadedUrls.length} gallery image${uploadedUrls.length > 1 ? "s" : ""}.`);
+                  } catch (uploadError: unknown) {
+                    setGalleryImageUrls([]);
+                    setError(uploadError instanceof Error ? uploadError.message : "Failed to upload gallery images.");
+                    setSuccess("Gallery images will upload via server on submit.");
+                  } finally {
+                    setIsUploadingImages(false);
+                  }
                 }}
               />
             </div>
+            {galleryImageUrls.length > 0 ? (
+              <p className="text-xs text-[#8fe28f]">Uploaded {galleryImageUrls.length} gallery image{galleryImageUrls.length > 1 ? "s" : ""}.</p>
+            ) : null}
           </label>
         </div>
 
@@ -540,10 +646,10 @@ export default function AddModPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting || isUploadingFile}
+          disabled={isSubmitting || isUploadingFile || isUploadingImages}
           className="rounded-[0.85rem] border-2 border-[#ff6600] bg-[#ff6600] px-5 py-3 font-bold text-white transition-all hover:bg-[#e95d00] hover:border-[#e95d00] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? "Creating Mod..." : "Create Mod"}
+          {isSubmitting ? "Creating Mod..." : isUploadingImages ? "Uploading Images..." : "Create Mod"}
         </button>
       </form>
     </main>

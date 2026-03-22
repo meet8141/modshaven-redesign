@@ -225,12 +225,12 @@ export async function getRandomMods(excludeName: string, limit: number = 8) {
 }
 
 export async function invalidateModCaches(mod?: { id?: string; slug?: string; name?: string }) {
-	revalidateTag(MODS_LIST_TAG);
-	revalidateTag(MODS_RANDOM_TAG);
+	revalidateTag(MODS_LIST_TAG, 'max');
+	revalidateTag(MODS_RANDOM_TAG, 'max');
 
 	if (!mod) return;
 
-	if (mod.id) revalidateTag(modTagById(mod.id));
-	if (mod.slug) revalidateTag(modTagBySlug(mod.slug));
-	if (mod.name) revalidateTag(modTagByName(mod.name));
+	if (mod.id) revalidateTag(modTagById(mod.id), 'max');
+	if (mod.slug) revalidateTag(modTagBySlug(mod.slug), 'max');
+	if (mod.name) revalidateTag(modTagByName(mod.name), 'max');
 }

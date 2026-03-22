@@ -5,6 +5,7 @@ import ImageGallery from '@/app/components/ImageGallery';
 
 import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive,Copyright,Download,BadgeCheck } from 'lucide-react';
 import type { Metadata } from "next";
+import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 import { getModByName, getModBySlug, getRandomMods } from '@/lib/DB';
@@ -13,6 +14,8 @@ import ShinyText from '@/app/components/ShinyText';
 import { notFound } from 'next/navigation';
 import DownloadButton from '@/app/components/DownloadButton';
 import DiscordCommunityCounts from '@/components/DiscordCommunityCounts';
+import { buildPageMetadata } from '@/lib/seo';
+import { absoluteUrl } from '@/lib/seo';
 
 type Props = {
   params: Promise<{ name: string }>;
@@ -22,11 +25,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { name } = await params;
   const decoded = decodeURIComponent(name);
   const mod = await getModBySlug(decoded) ?? await getModByName(decoded);
-  return {
-    title: mod ? `${mod.name} - Mods Haven` : 'Mod Not Found - Mods Haven',
-    description: mod?.description || '',
-    icons: { icon: '/icon/logo_1.ico' },
-  };
+
+  if (!mod) {
+    return buildPageMetadata({
+      title: 'Mod Not Found',
+      description: 'The requested mod could not be found.',
+      path: '/mods',
+      noIndex: true,
+    });
+  }
+
+  const canonicalSlug = mod.slug || encodeURIComponent(mod.name);
+
+  return buildPageMetadata({
+    title: mod.name,
+    description: mod.description || `Download ${mod.name} from Mods Haven.`,
+    path: `/mods/${canonicalSlug}`,
+    image: mod.mod_image || undefined,
+  });
 }
 
 export default async function Home({ params }: Props) {
@@ -34,6 +50,54 @@ export default async function Home({ params }: Props) {
   const decoded = decodeURIComponent(name);
   const mod = await getModBySlug(decoded) ?? await getModByName(decoded);
   if (!mod) return notFound();
+
+  const canonicalSlug = mod.slug || encodeURIComponent(mod.name);
+  const canonicalPath = `/mods/${canonicalSlug}`;
+  const canonicalUrl = absoluteUrl(canonicalPath);
+  const imageUrls = [mod.mod_image, ...(mod.images || [])].filter(Boolean);
+
+  const modJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: mod.name,
+    description: mod.description || `Download ${mod.name} from Mods Haven.`,
+    applicationCategory: 'Game Mod',
+    operatingSystem: 'Windows',
+    url: canonicalUrl,
+    image: imageUrls,
+    datePublished: mod.date_added || undefined,
+    author: mod.author
+      ? {
+          '@type': 'Person',
+          name: mod.author,
+        }
+      : undefined,
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: absoluteUrl('/'),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Mods',
+        item: absoluteUrl('/mods'),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: mod.name,
+        item: canonicalUrl,
+      },
+    ],
+  };
 
   // Combine mod_image + images array for the gallery
   const allImages = [ ...(mod.images || [])].filter(Boolean);
@@ -43,6 +107,16 @@ export default async function Home({ params }: Props) {
 
   return (
     <>
+      <Script
+        id={`mod-jsonld-${mod._id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(modJsonLd) }}
+      />
+      <Script
+        id={`mod-breadcrumb-jsonld-${mod._id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       
       <div className="relative z-10 justify-center m-4 sm:m-6 md:m-8 flex flex-col gap-6 md:gap-8" style={{ minHeight: '100vh', padding: '24px 0' }}>
 

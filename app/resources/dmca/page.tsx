@@ -1,13 +1,13 @@
 import {Mail} from "lucide-react"
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Mods Haven - DMCA & Copyright",
-  description: "Report copyright infringement on Modshaven.com. We take DMCA claims seriously and will act promptly to remove infringing content.",
-  icons: {
-    icon: '/icon/logo_1.ico',
-  },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: "DMCA & Copyright",
+  description:
+    "Report copyright infringement on Modshaven.com. We take DMCA claims seriously and will act promptly to remove infringing content.",
+  path: "/resources/dmca",
+});
 export default function DMCA() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

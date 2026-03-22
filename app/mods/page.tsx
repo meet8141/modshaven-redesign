@@ -9,14 +9,14 @@ import SearchFilterBar from '../components/SearchFilterBar';
 import DiscordCommunityCounts from '../../components/DiscordCommunityCounts';
 
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Mods Haven - Mods",
-  description: "Discover high-quality mods for BeamNG.drive and Assetto Corsa. Browse our curated collection of cars, maps, and trucks to enhance your gaming experience.",
-  icons: {
-    icon: '/icon/logo_1.ico',
-  },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: "Mods",
+  description:
+    "Discover high-quality mods for BeamNG.drive and Assetto Corsa. Browse our curated collection of cars, maps, and trucks to enhance your gaming experience.",
+  path: "/mods",
+});
 
 
 export default function Home({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; type?: string; brand?: string; game?: string; sort?: string }> }) {

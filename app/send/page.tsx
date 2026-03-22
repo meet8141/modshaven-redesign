@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import SendClient from "./SendClient";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Mods Haven - Submit a Mod",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Submit a Mod",
   description: "Submit your favorite mods to be added to the Mods Haven library.",
-  icons: {
-    icon: "/icon/logo_1.ico",
-  },
-};
+  path: "/send",
+});
 
 export default function SendPage() {
   return <SendClient />;

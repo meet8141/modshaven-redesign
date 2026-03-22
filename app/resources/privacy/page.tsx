@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Mods Haven - Privacy Policy",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Privacy Policy",
   description: "Learn how we collect, use, and protect your personal information on Modshaven.com",
-  icons: {
-    icon: '/icon/logo_1.ico',
-  },
-};
+  path: "/resources/privacy",
+});
 export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

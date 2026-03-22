@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getModById } from '@/lib/DB';
 import DownloadClient from './DownloadClient';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,12 +12,33 @@ type Props = {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { id } = await searchParams;
-  if (!id) return { title: 'Download - Mods Haven' };
+  if (!id) {
+    return buildPageMetadata({
+      title: 'Download',
+      description: 'Download your selected mod from Mods Haven.',
+      path: '/download',
+      noIndex: true,
+    });
+  }
+
   const mod = await getModById(id);
-  return {
-    title: mod ? `Download ${mod.name} - Mods Haven` : 'Download - Mods Haven',
-    icons: { icon: '/icon/logo_1.ico' },
-  };
+
+  if (!mod) {
+    return buildPageMetadata({
+      title: 'Download',
+      description: 'The requested download was not found.',
+      path: '/download',
+      noIndex: true,
+    });
+  }
+
+  return buildPageMetadata({
+    title: `Download ${mod.name}`,
+    description: `Download ${mod.name} safely from Mods Haven.`,
+    path: `/download?id=${encodeURIComponent(id)}`,
+    noIndex: true,
+    image: mod.mod_image || undefined,
+  });
 }
 
 export default async function DownloadPage({ searchParams }: Props) {

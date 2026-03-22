@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Terms of Service",
+  description: "Learn about the terms and conditions for using Modshaven.com.",
+  path: "/resources/toc",
+});
+
 export default function TermsOfService() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

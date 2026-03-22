@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Mods Haven - Terms of Service",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Terms of Service",
   description: "Learn about the terms and conditions for using Modshaven.com.",
-  icons: {
-    icon: '/icon/logo_1.ico',
-  },
-};
+  path: "/resources/terms",
+});
 export default function TermsOfService() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

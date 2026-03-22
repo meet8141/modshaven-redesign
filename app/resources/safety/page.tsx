@@ -1,13 +1,12 @@
 import {ShieldCheck,Eye,CircleAlert} from "lucide-react";
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Mods Haven - Safety & Security",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Safety & Security",
   description: "Learn about the safety and security measures we take to protect our users on Modshaven.com.",
-  icons: {
-    icon: '/icon/logo_1.ico',
-  },
-};
+  path: "/resources/safety",
+});
 export default function Safety() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-32 pb-24">

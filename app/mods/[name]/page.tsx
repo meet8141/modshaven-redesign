@@ -125,7 +125,7 @@ export default async function Home({ params }: Props) {
             {/* mod details section */}
           <div className="flex gap-2 md:gap-6 items-stretch  mx-auto p-3 sm:p-4 md:p-10 md:px-30 justify-center flex-col lg:flex-row md:flex-col">
              {/* mod image */}
-            <div className="bg-black/50 backdrop-blur-lg w-full min-h-[300px] sm:min-h-[400px] rounded-[1rem] flex flex-col items-center">
+            <div className="bg-black/50 backdrop-blur-lg w-full min-h-[300px] sm:w-150  sm:min-h-[400px] rounded-[1rem] flex flex-col items-center">
               <ImageGallery images={allImages} alt={mod.name} />
               {/* Stats bar */}
               <div className="flex justify-center items-center gap-2  sm:gap-4 md:gap-5 py-3 mt-[0.5rem] sm:mt-[0.5rem]">
@@ -143,7 +143,7 @@ export default async function Home({ params }: Props) {
               </div>
             </div>
             {/* mod details */}
-            <div className="bg-black/50 backdrop-blur-lg w-full rounded-[1rem] flex flex-col gap-3 sm:gap-5 lg:gap-7 p-3 sm:p-4 md:p-6">
+            <div className="bg-black/50 backdrop-blur-lg w-full sm:w-150 rounded-[1rem] flex flex-col gap-3 sm:gap-5 lg:gap-7 p-3 sm:p-4 md:p-6">
               <h2 className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]">
                 <ShinyText text={mod.name} shineColor='#fff' color='#fff' speed={4} className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]" />
               </h2>

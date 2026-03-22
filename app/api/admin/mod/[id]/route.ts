@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { z } from "zod";
-import { connectToDatabase } from "@/lib/DB";
+import { connectToDatabase, invalidateModCaches } from "@/lib/DB";
 import { requireRole } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -100,6 +100,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const ModModel = (mongoose.models.Mod as mongoose.Model<any>) || mongoose.model("Mod");
+    const previous = await ModModel.findById(id).select({ _id: 1, slug: 1, name: 1 }).lean();
+    if (!previous) {
+      return NextResponse.json({ error: "Mod not found" }, { status: 404 });
+    }
+
     const updated = await ModModel.findByIdAndUpdate(id, payload, {
       new: true,
       runValidators: true,
@@ -108,6 +113,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!updated) {
       return NextResponse.json({ error: "Mod not found" }, { status: 404 });
     }
+
+    await invalidateModCaches({ id, slug: previous.slug, name: previous.name });
+    await invalidateModCaches({ id, slug: updated.slug, name: updated.name });
 
     return NextResponse.json({ success: true, mod: serializeMod(updated) });
   } catch (error: unknown) {
@@ -141,11 +149,14 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
     }
 
     const ModModel = (mongoose.models.Mod as mongoose.Model<any>) || mongoose.model("Mod");
-    const deleted = await ModModel.findByIdAndDelete(id);
-
-    if (!deleted) {
+    const existing = await ModModel.findById(id).select({ _id: 1, slug: 1, name: 1 }).lean();
+    if (!existing) {
       return NextResponse.json({ error: "Mod not found" }, { status: 404 });
     }
+
+    await ModModel.findByIdAndDelete(id);
+
+    await invalidateModCaches({ id, slug: existing.slug, name: existing.name });
 
     return NextResponse.json({ success: true, message: "Mod deleted successfully" });
   } catch (error: unknown) {

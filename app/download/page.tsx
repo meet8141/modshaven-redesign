@@ -4,7 +4,7 @@ import DownloadClient from './DownloadClient';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 type Props = {
   searchParams: Promise<{ id?: string }>;

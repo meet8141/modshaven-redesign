@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getAllMods } from "@/lib/DB";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 
+export const revalidate = 3600;
+
 const staticRoutes = [
   "/",
   "/about",

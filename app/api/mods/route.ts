@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import slugify from "slugify";
 import { z } from "zod";
-import { connectToDatabase } from "@/lib/DB";
+import { connectToDatabase, invalidateModCaches } from "@/lib/DB";
 import { requireAdminOrModerator } from "@/lib/auth";
 import { uploadImageToR2, uploadManyImagesToR2, validateImageFile } from "@/lib/r2";
 import mongoose from "mongoose";
@@ -135,6 +135,12 @@ export async function POST(req: NextRequest) {
       date_added: new Date(),
       uploadedBy: new mongoose.Types.ObjectId(user._id),
       updatedBy: new mongoose.Types.ObjectId(user._id),
+    });
+
+    await invalidateModCaches({
+      id: String(created._id),
+      slug: created.slug,
+      name: created.name,
     });
 
     return NextResponse.json(

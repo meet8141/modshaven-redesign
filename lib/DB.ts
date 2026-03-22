@@ -1,5 +1,30 @@
 import mongoose from 'mongoose';
-import { unstable_cache } from 'next/cache';
+import { revalidateTag, unstable_cache } from 'next/cache';
+
+const MODS_LIST_TAG = 'mods:list';
+const MODS_RANDOM_TAG = 'mods:random';
+
+const modTagById = (id: string) => `mod:id:${id}`;
+const modTagBySlug = (slug: string) => `mod:slug:${slug}`;
+const modTagByName = (name: string) => `mod:name:${name.toLowerCase()}`;
+
+function toStableFilterKey(filters: {
+	search?: string;
+	type?: string;
+	brand?: string;
+	game?: string;
+	sort?: string;
+}) {
+	const normalized = {
+		search: filters.search ?? '',
+		type: filters.type ?? '',
+		brand: filters.brand ?? '',
+		game: filters.game ?? '',
+		sort: filters.sort ?? '',
+	};
+
+	return JSON.stringify(normalized);
+}
 
 let cached = (global as any).mongoose || { conn: null, promise: null };
 
@@ -73,10 +98,15 @@ function serializeModDoc(doc: any) {
 // ── DB helpers ──
 
 export async function getAllMods() {
-	await connectToDatabase();
-	const docs = await ModModel.find().sort({ date_added: -1 }).lean();
-	// Serialize Mongoose documents to plain objects
-	return docs.map(serializeModDoc);
+	return unstable_cache(
+		async () => {
+			await connectToDatabase();
+			const docs = await ModModel.find().sort({ date_added: -1 }).lean();
+			return docs.map(serializeModDoc);
+		},
+		['mods-all'],
+		{ revalidate: 300, tags: [MODS_LIST_TAG] }
+	)();
 }
 
 async function _getModsPaginated(
@@ -124,39 +154,83 @@ async function _getModsPaginated(
 }
 
 // Cached version: DB results revalidate every 60 seconds per unique page+filters combo
-export const getModsPaginated = unstable_cache(
-	(page: number = 1, perPage: number = 12, filters: Parameters<typeof _getModsPaginated>[2] = {}) =>
-		_getModsPaginated(page, perPage, filters),
-	['mods-paginated'],
-	{ revalidate: 60 }
-);
+export async function getModsPaginated(
+	page: number = 1,
+	perPage: number = 12,
+	filters: Parameters<typeof _getModsPaginated>[2] = {}
+) {
+	const filterKey = toStableFilterKey(filters);
+
+	return unstable_cache(
+		() => _getModsPaginated(page, perPage, filters),
+		['mods-paginated', String(page), String(perPage), filterKey],
+		{ revalidate: 60, tags: [MODS_LIST_TAG] }
+	)();
+}
 
 export async function getModBySlug(slug: string) {
-	await connectToDatabase();
-	const doc = await ModModel.findOne({ slug }).lean();
-	if (!doc) return null;
-	return serializeModDoc(doc);
+	return unstable_cache(
+		async () => {
+			await connectToDatabase();
+			const doc = await ModModel.findOne({ slug }).lean();
+			if (!doc) return null;
+			return serializeModDoc(doc);
+		},
+		['mod-by-slug', slug],
+		{ revalidate: 300, tags: [modTagBySlug(slug)] }
+	)();
 }
 
 export async function getModById(id: string) {
-	await connectToDatabase();
-	const doc = await ModModel.findById(id).lean();
-	if (!doc) return null;
-	return serializeModDoc(doc);
+	return unstable_cache(
+		async () => {
+			await connectToDatabase();
+			const doc = await ModModel.findById(id).lean();
+			if (!doc) return null;
+			return serializeModDoc(doc);
+		},
+		['mod-by-id', id],
+		{ revalidate: 300, tags: [modTagById(id)] }
+	)();
 }
 
 export async function getModByName(name: string) {
-	await connectToDatabase();
-	const doc = await ModModel.findOne({ name }).lean();
-	if (!doc) return null;
-	return serializeModDoc(doc);
+	const normalizedName = name.trim();
+
+	return unstable_cache(
+		async () => {
+			await connectToDatabase();
+			const doc = await ModModel.findOne({ name: normalizedName }).lean();
+			if (!doc) return null;
+			return serializeModDoc(doc);
+		},
+		['mod-by-name', normalizedName],
+		{ revalidate: 300, tags: [modTagByName(normalizedName)] }
+	)();
 }
 
 export async function getRandomMods(excludeName: string, limit: number = 8) {
-	await connectToDatabase();
-	const docs = await ModModel.aggregate([
-		{ $match: { name: { $ne: excludeName } } },
-		{ $sample: { size: limit } },
-	]);
-	return docs.map(serializeModDoc);
+	return unstable_cache(
+		async () => {
+			await connectToDatabase();
+			const docs = await ModModel.aggregate([
+				{ $match: { name: { $ne: excludeName } } },
+				{ $sample: { size: limit } },
+			]);
+			return docs.map(serializeModDoc);
+		},
+		['mods-random', excludeName, String(limit)],
+		{ revalidate: 300, tags: [MODS_RANDOM_TAG] }
+	)();
+}
+
+export async function invalidateModCaches(mod?: { id?: string; slug?: string; name?: string }) {
+	revalidateTag(MODS_LIST_TAG);
+	revalidateTag(MODS_RANDOM_TAG);
+
+	if (!mod) return;
+
+	if (mod.id) revalidateTag(modTagById(mod.id));
+	if (mod.slug) revalidateTag(modTagBySlug(mod.slug));
+	if (mod.name) revalidateTag(modTagByName(mod.name));
 }

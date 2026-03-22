@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { z } from "zod";
-import { connectToDatabase } from "@/lib/DB";
+import { connectToDatabase, invalidateModCaches } from "@/lib/DB";
 import { requireRole } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -23,11 +23,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { ads_mode } = adsSchema.parse(await req.json());
 
     const ModModel = (mongoose.models.Mod as mongoose.Model<any>) || mongoose.model("Mod");
+    const previous = await ModModel.findById(id).select({ _id: 1, slug: 1, name: 1 }).lean();
+    if (!previous) {
+      return NextResponse.json({ error: "Mod not found" }, { status: 404 });
+    }
+
     const updated = await ModModel.findByIdAndUpdate(id, { ads_mode }, { new: true, runValidators: true }).lean();
 
     if (!updated) {
       return NextResponse.json({ error: "Mod not found" }, { status: 404 });
     }
+
+    await invalidateModCaches({ id, slug: previous.slug, name: previous.name });
 
     const response = NextResponse.json({ success: true, ads_mode: updated.ads_mode });
 

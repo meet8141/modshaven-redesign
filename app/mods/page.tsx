@@ -18,6 +18,8 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/mods",
 });
 
+export const revalidate = 60;
+
 
 export default function Home({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; type?: string; brand?: string; game?: string; sort?: string }> }) {
   return (

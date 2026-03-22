@@ -7,7 +7,7 @@ import { CarFront, ArrowUpRight, Map, Truck, CalendarFold, FolderArchive,Copyrig
 import type { Metadata } from "next";
 import Script from 'next/script';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 import { getModByName, getModBySlug, getRandomMods } from '@/lib/DB';
 import RecommendedSlider from '@/app/components/RecommendedSlider';
 import ShinyText from '@/app/components/ShinyText';
@@ -143,7 +143,7 @@ export default async function Home({ params }: Props) {
               </div>
             </div>
             {/* mod details */}
-            <div className="bg-black/50 backdrop-blur-lg w-full sm:w-150 rounded-[1rem] flex flex-col gap-3 sm:gap-5 lg:gap-7 p-3 sm:p-4 md:p-6">
+            <div className="bg-black/50 backdrop-blur-lg w-full sm:w-150  rounded-[1rem] flex flex-col gap-3 sm:gap-5 lg:gap-7 p-3 sm:p-4 md:p-6">
               <h2 className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]">
                 <ShinyText text={mod.name} shineColor='#fff' color='#fff' speed={4} className="text-xl sm:text-2xl md:text-[2.4rem] font-[800]" />
               </h2>

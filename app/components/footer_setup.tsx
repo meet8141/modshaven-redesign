@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import {
   Mail,
   Phone,
@@ -57,7 +58,7 @@ function HoverFooter() {
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-center space-x-2 ">
               
-                <img src="/icon/logo_1.png" alt="" className="h-[50px] " />
+                <Image src="/icon/logo_1.png" alt="" width={50} height={50} className="h-[50px] w-[50px]" />
              
               <span className="text-white text-3xl font-bold">odshaven</span>
             </div>

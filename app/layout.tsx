@@ -4,7 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import HoverFooter from "./components/footer_setup";
 import { NavBar } from "./components/tubelight-navbar"
-import PixelBlast from '@/app/components/PixelBlast';
+import PixelBlastClient from "./components/PixelBlastClient";
 import PageTransition from '@/app/components/PageTransition';
 import {
   DEFAULT_DESCRIPTION,
@@ -138,23 +138,8 @@ export default function RootLayout({
         />
         <NavBar />
         <div style={{ width: '100%', height: '100%', position: 'fixed', top: 0, left: 0, zIndex: 0 }}>
-          <PixelBlast
-            variant="square"
-            pixelSize={25}
-            color="#d55500"
-            patternScale={20}
-            patternDensity={0.1}
-            pixelSizeJitter={0}
-            enableRipples={false}
-            rippleSpeed={0.4}
-            rippleThickness={0.12}
-            rippleIntensityScale={1.5}
-            liquid={false}
-            liquidStrength={0.12}
-            liquidRadius={1.2}
-            liquidWobbleSpeed={5}
-            speed={0.9}
-            edgeFade={0.3}
+          <PixelBlastClient
+      
           />
         </div>
         <div className="relative " style={{ zIndex: 1 }}>

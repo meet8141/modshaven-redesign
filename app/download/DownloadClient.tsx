@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Download, FileText } from 'lucide-react';
 
@@ -48,10 +49,14 @@ export default function DownloadClient({ mod }: { mod: Mod }) {
 
         {/* Image */}
         {mod.mod_image && (
-          <img
+          <Image
             src={mod.mod_image}
             alt={mod.name}
+            width={720}
+            height={360}
+            sizes="(max-width: 640px) 92vw, 520px"
             className="w-full max-h-52 object-cover rounded-[0.75rem]"
+            priority
           />
         )}
 

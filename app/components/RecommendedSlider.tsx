@@ -2,6 +2,7 @@
 
 import { useRef, useCallback, useState } from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronsLeft, ChevronsRight, Shuffle, ArrowUpRight, CarFront, Map, Truck } from 'lucide-react';
 import ShinyText from '@/app/components/ShinyText';
@@ -77,11 +78,14 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
           <SwiperSlide key={mod._id}>
             <div className="bg-black/30 backdrop-blur-lg  border-2 border-transparent hover:border-[#ff6600] rounded-[1rem] p-3 flex flex-col gap-3 transition-all duration-300  h-full">
               {/* Image */}
-              <div className="w-full h-34 rounded-[0.75rem] overflow-hidden bg-black/40">
-                <img
+              <div className="w-full h-34 rounded-[0.75rem] overflow-hidden bg-black/40 relative">
+                <Image
                   src={mod.mod_image}
                   alt={mod.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 25vw"
+                  className="object-cover"
+                  loading="lazy"
                 />
               </div>
 
@@ -94,7 +98,7 @@ export default function RecommendedSlider({ initialMods }: { initialMods: Mod[] 
               <div className="flex flex-col gap-2 px-1">
                 {/* Game badge */}
                 <div className="flex items-center gap-1.5 bg-[#362a1f] border-2 border-[#563a1a] rounded-[0.5rem] px-3 py-1 w-fit">
-                  <img
+                  <Image
                     src={mod.game === 'BeamNG.drive' ? '/icon/icon-beamng.ico' : '/icon/icon-assetto.ico'}
                     alt={mod.game}
                     width={16}

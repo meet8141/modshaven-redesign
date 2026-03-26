@@ -1,20 +1,15 @@
-"use client";
-
-
 import Image from "next/image";
+import Link from "next/link";
 import SplitText from "./components/SplitText";
 import DecryptedText from './components/DecryptedText';
 import DiscordCommunityCounts from "../components/DiscordCommunityCounts";
 
 import { FolderSearch, Download, Gamepad } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 
 
 
 export default function Home() {
-  const router = useRouter();
-
   return (
     <>
       
@@ -48,10 +43,10 @@ export default function Home() {
         </div>
 
         <div className="flex justify-center gap-6  align-center">
-          <button
+          <Link
+            href="/mods"
             className="mt-10 px-6 py-3 bg-gradient-to-r from-[#ff743d] via-[#ff6600] to-[#ff5500] text-white font-bold rounded-[0.75rem] shadow-lg hover:scale-110 hover:shadow-2xl hover:bg-gradient-to-br transition-all duration-300 relative overflow-hidden focus:outline-none focus:ring-4 focus:ring-[#ff743d]/50"
             style={{ position: 'relative', zIndex: 1 }}
-            onClick={() => router.push('/mods')}
           >
             <span className="relative z-10">Explore Mods</span>
             <span className="absolute left-[-40%] top-0 w-[140%] h-full bg-gradient-to-r from-white via-transparent to-transparent opacity-20 blur-lg pointer-events-none animate-shine"></span>
@@ -64,13 +59,13 @@ export default function Home() {
           animation: shine 2s linear infinite;
         }
       `}</style>
-          </button>
-          <button
-            className="mt-10 px-4 py-2 bg-transparent backdrop-blur-lg  border-2 border-[#ff6600] text-[#fff] font-bold rounded-[0.75rem] hover:bg-[#ff660010] hover:text-[#ff6600] transition-colors duration-300"
-            onClick={() => router.push('/about')}
+          </Link>
+          <Link
+            href="/about"
+            className="mt-10 px-4 py-2 bg-transparent backdrop-blur-lg border-2 border-[#ff6600] text-[#fff] font-bold rounded-[0.75rem] hover:bg-[#ff660010] hover:text-[#ff6600] transition-colors duration-300"
           >
             About
-          </button>
+          </Link>
         </div>
 
         {/* How It Works section */}

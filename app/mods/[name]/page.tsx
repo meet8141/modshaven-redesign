@@ -157,7 +157,13 @@ export default async function Home({ params }: Props) {
                     <p className="text-xs sm:text-sm md:text-base font-[700]">{mod.author}</p>
                   </div>
                     <div className="border-2 border-[#563a1a] px-3 py-1.5 sm:p-2 rounded-[0.5rem] bg-[#362a1f] flex items-center justify-center gap-2">
-                  <img src={mod.game === "BeamNG.drive" ? "/icon/icon-beamng.ico" : "/icon/icon-assetto.ico"} alt={mod.game} width={24} height={24} style={{ borderRadius: 4 }} /> 
+                  <Image
+                    src={mod.game === "BeamNG.drive" ? "/icon/icon-beamng.ico" : "/icon/icon-assetto.ico"}
+                    alt={mod.game}
+                    width={24}
+                    height={24}
+                    style={{ borderRadius: 4 }}
+                  />
                      <p className="text-xs sm:text-sm md:text-base font-[700]">{mod.game}</p>
                   </div>
                 </div>
